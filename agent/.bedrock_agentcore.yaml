@@ -1,0 +1,20 @@
+agent:
+  name: compliquest-agent
+  description: Agentic compliance questionnaire with LSEGling character guidance
+  entrypoint: src.main:app
+
+model:
+  provider: bedrock
+  model_id: anthropic.claude-3-5-sonnet-20241022
+
+memory:
+  mode: NO_MEMORY
+
+gateway:
+  enabled: false
+
+deployment:
+  runtime: bedrock-agentcore
+  region: us-east-1
+  timeout: 300
+  memory: 512

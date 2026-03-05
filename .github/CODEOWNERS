@@ -1,0 +1,18 @@
+# CompliQuest Code Owners
+
+# Backend
+/backend/ @backend-team
+
+# Frontend
+/frontend/ @frontend-team
+
+# Infrastructure
+/infrastructure/ @devops-team
+
+# Documentation
+/docs/ @tech-lead
+
+# Root configuration files
+/.github/ @tech-lead
+/package.json @tech-lead
+/tsconfig.json @tech-lead
