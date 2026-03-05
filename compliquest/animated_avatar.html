@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦆 Animated Duck Avatar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: white;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ffd700, #ffaa00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .avatar-container {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .avatar-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-wrapper img,
+        .avatar-wrapper object {
+            width: 250px;
+            height: 250px;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
+        }
+
+        /* Animation States */
+        .hungry .avatar-wrapper {
+            animation: peck 0.3s ease-in-out infinite;
+        }
+
+        .thirsty .avatar-wrapper {
+            animation: drink 1s ease-in-out infinite;
+        }
+
+        .tired .avatar-wrapper {
+            animation: drowsy 2s ease-in-out infinite;
+        }
+
+        .wet .avatar-wrapper {
+            animation: shake 0.1s ease-in-out infinite;
+        }
+
+        @keyframes peck {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(10px) rotate(5deg); }
+            50% { transform: translateY(-5px) rotate(-2deg); }
+            75% { transform: translateY(8px) rotate(3deg); }
+        }
+
+        @keyframes drink {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            25% { transform: rotate(-10deg) translateY(-10px); }
+            50% { transform: rotate(5deg) translateY(5px); }
+            75% { transform: rotate(-5deg) translateY(-5px); }
+        }
+
+        @keyframes drowsy {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            25% { transform: rotate(3deg) translateY(5px); }
+            50% { transform: rotate(-2deg) translateY(10px); }
+            75% { transform: rotate(2deg) translateY(5px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-8px) rotate(-5deg); }
+            50% { transform: translateX(8px) rotate(5deg); }
+            75% { transform: translateX(-5px) rotate(-3deg); }
+        }
+
+        /* Particle effects */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+        }
+
+        .hungry .particle { animation: floatUp 1.5s ease-out infinite; }
+        .thirsty .particle { animation: drip 1s ease-in infinite; }
+        .tired .particle { animation: float 2s ease-in-out infinite; }
+        .wet .particle { animation: splash 0.5s ease-out infinite; }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-80px) scale(0.5); }
+        }
+
+        @keyframes drip {
+            0% { opacity: 1; transform: translateY(-20px); }
+            100% { opacity: 0; transform: translateY(100px); }
+        }
+
+        @keyframes float {
+            0%, 100% { opacity: 0.7; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-20px); }
+        }
+
+        @keyframes splash {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(2) translateY(-30px); }
+        }
+
+        .status-display {
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .status-display h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .status-display p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .hungry .status-display { background: #ff9800dd; box-shadow: 0 4px 20px #ff980066; }
+        .thirsty .status-display { background: #2196f3dd; box-shadow: 0 4px 20px #2196f366; }
+        .tired .status-display { background: #9c27b0dd; box-shadow: 0 4px 20px #9c27b066; }
+        .wet .status-display { background: #607d8bdd; box-shadow: 0 4px 20px #607d8b66; }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .controls button {
+            padding: 15px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-weight: 500;
+        }
+
+        .controls button:hover {
+            transform: scale(1.05);
+        }
+
+        .controls button.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px currentColor;
+            border: 3px solid white;
+        }
+
+        .btn-hungry { background: #ff9800; }
+        .btn-thirsty { background: #2196f3; }
+        .btn-tired { background: #9c27b0; }
+        .btn-wet { background: #607d8b; }
+
+        .instructions {
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🦆 CompliQuest Duck</h1>
+    <p class="subtitle">Your Animated Avatar</p>
+
+    <div id="app" class="hungry">
+        <div class="status-display">
+            <h2 id="status-label">🍞 Hungry</h2>
+            <p id="status-desc">Looking for food...</p>
+        </div>
+
+        <div class="avatar-container">
+            <div class="particles" id="particles"></div>
+            <div class="avatar-wrapper">
+                <img src="avatar.svg" alt="Duck Avatar" id="avatar">
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-hungry active" onclick="setState('hungry')">🍞 Hungry</button>
+            <button class="btn-thirsty" onclick="setState('thirsty')">💧 Thirsty</button>
+            <button class="btn-tired" onclick="setState('tired')">😴 Tired</button>
+            <button class="btn-wet" onclick="setState('wet')">🌧️ Wet</button>
+        </div>
+    </div>
+
+    <p class="instructions">Click a button to change the duck's mood</p>
+
+    <script>
+        const states = {
+            hungry: { label: '🍞 Hungry', desc: 'Looking for food...', particle: '🍞' },
+            thirsty: { label: '💧 Thirsty', desc: 'Needs water...', particle: '💧' },
+            tired: { label: '😴 Tired', desc: 'Very sleepy...', particle: '💤' },
+            wet: { label: '🌧️ Wet from Road', desc: 'Shaking off water...', particle: '💦' }
+        };
+
+        let currentState = 'hungry';
+        let particleInterval;
+
+        function setState(state) {
+            currentState = state;
+            const app = document.getElementById('app');
+            app.className = state;
+
+            document.getElementById('status-label').textContent = states[state].label;
+            document.getElementById('status-desc').textContent = states[state].desc;
+
+            // Update active button
+            document.querySelectorAll('.controls button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.btn-${state}`).classList.add('active');
+
+            // Restart particles
+            startParticles();
+        }
+
+        function createParticle() {
+            const particles = document.getElementById('particles');
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.textContent = states[currentState].particle;
+            
+            // Random position around avatar
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 80 + Math.random() * 40;
+            const x = 150 + Math.cos(angle) * distance;
+            const y = 150 + Math.sin(angle) * distance;
+            
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.animationDelay = `${Math.random() * 0.5}s`;
+            
+            particles.appendChild(particle);
+
+            // Remove particle after animation
+            setTimeout(() => particle.remove(), 2000);
+        }
+
+        function startParticles() {
+            if (particleInterval) clearInterval(particleInterval);
+            document.getElementById('particles').innerHTML = '';
+            
+            const intervals = { hungry: 300, thirsty: 400, tired: 800, wet: 150 };
+            particleInterval = setInterval(createParticle, intervals[currentState]);
+        }
+
+        // Start with initial state
+        startParticles();
+    </script>
+</body>
+</html>
