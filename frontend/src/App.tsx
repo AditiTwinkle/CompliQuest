@@ -1,0 +1,37 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import store from './store'
+import Layout from './components/Layout'
+import Dashboard from './pages/Dashboard'
+import UserProfile from './pages/UserProfile'
+import Projects from './pages/Projects'
+import Questionnaire from './pages/Questionnaire'
+
+const queryClient = new QueryClient()
+
+function App() {
+  return (
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <Routes>
+            <Route
+              element={
+                <Layout />
+              }
+            >
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/profile" element={<UserProfile />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:projectId/questionnaire" element={<Questionnaire />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </QueryClientProvider>
+    </Provider>
+  )
+}
+
+export default App

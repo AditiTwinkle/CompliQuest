@@ -1,0 +1,25 @@
+{
+  "name": "compliquest-infrastructure",
+  "version": "0.1.0",
+  "description": "AWS CDK infrastructure for CompliQuest",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "cdk:synth": "cdk synth",
+    "cdk:deploy": "cdk deploy",
+    "deploy:dev": "cdk deploy --context environment=dev",
+    "deploy:staging": "cdk deploy --context environment=staging",
+    "deploy:prod": "cdk deploy --context environment=prod"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.80.0",
+    "constructs": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
