@@ -1,0 +1,7 @@
+[package]
+name = "compliquest"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+animatar = "1.0.0"

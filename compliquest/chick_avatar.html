@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐤 Dilly the Duck - LSEGling</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #a8e6cf 0%, #dcedc1 50%, #ffd3a5 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            transition: background 0.8s ease;
+        }
+
+        /* Dark rainy sky for wet state */
+        .wet body,
+        body.wet-bg {
+            background: linear-gradient(180deg, #4a5568 0%, #718096 40%, #a0aec0 70%, #8a9a5b 100%) !important;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #ff8c42;
+            text-shadow: 2px 2px 0px white;
+            margin-bottom: 15px;
+        }
+
+        .scene {
+            position: relative;
+            width: 350px;
+            height: 350px;
+        }
+
+        /* Soft grass */
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(180deg, #98d977 0%, #7cb868 100%);
+            border-radius: 100% 100% 0 0;
+            transition: background 0.8s ease;
+        }
+
+        .wet .ground {
+            background: linear-gradient(180deg, #6b8a5a 0%, #5a7a4e 100%);
+        }
+
+        /* Flowers */
+        .flower {
+            position: absolute;
+            transition: all 0.8s ease;
+        }
+
+        .wet .flower {
+            filter: grayscale(0.6) brightness(0.7);
+            transform: rotate(25deg) translateY(8px) scale(0.85);
+            opacity: 0.6;
+        }
+
+        .flower:nth-child(1) { left: 30px; }
+        .flower:nth-child(2) { right: 40px; }
+        .flower:nth-child(3) { left: 80px; bottom: 50px; font-size: 16px; }
+
+        /* Chick Container */
+        .chick {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+        }
+
+        /* Cute round body */
+        .body {
+            width: 100px;
+            height: 90px;
+            background: linear-gradient(145deg, #fff176 0%, #ffee58 30%, #ffc107 100%);
+            border-radius: 50%;
+            position: relative;
+            z-index: 5;
+            box-shadow: inset -5px -5px 15px rgba(255,152,0,0.3),
+                        inset 5px 5px 15px rgba(255,255,255,0.8);
+        }
+
+        /* Fluffy texture overlay */
+        .body::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 50%);
+        }
+
+        /* Adorable round head */
+        .head {
+            width: 80px;
+            height: 75px;
+            background: linear-gradient(145deg, #fff176 0%, #ffee58 30%, #ffc107 100%);
+            border-radius: 50%;
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            box-shadow: inset -4px -4px 12px rgba(255,152,0,0.3),
+                        inset 4px 4px 12px rgba(255,255,255,0.8);
+        }
+
+        .head::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 25%, rgba(255,255,255,0.5) 0%, transparent 40%);
+        }
+
+        /* Big kawaii eyes */
+        .eyes {
+            position: absolute;
+            top: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 18px;
+        }
+
+        .eye {
+            width: 20px;
+            height: 24px;
+            background: linear-gradient(180deg, #333 0%, #000 100%);
+            border-radius: 50%;
+            position: relative;
+            animation: gentleBlink 4s ease-in-out infinite;
+        }
+
+        /* Big sparkly highlight */
+        .eye::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            top: 4px;
+            left: 4px;
+        }
+
+        /* Small secondary highlight */
+        .eye::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            top: 12px;
+            right: 4px;
+            opacity: 0.7;
+        }
+
+        @keyframes gentleBlink {
+            0%, 45%, 55%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.1); }
+        }
+
+        /* Cute small beak */
+        .beak {
+            position: absolute;
+            top: 42px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .beak-top {
+            width: 16px;
+            height: 10px;
+            background: linear-gradient(180deg, #ff9800 0%, #ff7043 100%);
+            border-radius: 50% 50% 40% 40%;
+            margin-left: -8px;
+        }
+
+        .beak-bottom {
+            width: 12px;
+            height: 6px;
+            background: #ff7043;
+            border-radius: 0 0 50% 50%;
+            margin-left: -6px;
+            margin-top: -2px;
+        }
+
+        /* Rosy cheeks */
+        .cheek {
+            width: 14px;
+            height: 8px;
+            background: radial-gradient(ellipse, #ffab91 0%, transparent 70%);
+            border-radius: 50%;
+            position: absolute;
+            top: 38px;
+        }
+
+        .cheek.left { left: 6px; }
+        .cheek.right { right: 6px; }
+
+        /* Small cute wings */
+        .wing {
+            width: 28px;
+            height: 40px;
+            background: linear-gradient(145deg, #fff176 0%, #ffc107 100%);
+            border-radius: 50%;
+            position: absolute;
+            top: 25px;
+            transform-origin: top center;
+            box-shadow: inset -2px -2px 8px rgba(255,152,0,0.3);
+        }
+
+        .wing.left {
+            left: -12px;
+            transform: rotate(-15deg);
+        }
+
+        .wing.right {
+            right: -12px;
+            transform: rotate(15deg);
+        }
+
+        /* Little feet */
+        .feet {
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 25px;
+        }
+
+        .foot {
+            width: 22px;
+            height: 12px;
+            background: linear-gradient(180deg, #ff9800 0%, #ff7043 100%);
+            border-radius: 50%;
+        }
+
+        /* Tiny tail tuft */
+        .tail {
+            position: absolute;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .tail-feather {
+            width: 6px;
+            height: 18px;
+            background: linear-gradient(180deg, #fff176 0%, #ffc107 100%);
+            border-radius: 50%;
+            position: absolute;
+            transform-origin: bottom center;
+        }
+
+        .tail-feather:nth-child(1) { transform: rotate(-15deg); left: -5px; }
+        .tail-feather:nth-child(2) { transform: rotate(0deg); left: 0; }
+        .tail-feather:nth-child(3) { transform: rotate(15deg); left: 5px; }
+
+        /* ========== CUTE ANIMATIONS ========== */
+
+        /* Default idle - gentle bounce */
+        .chick {
+            animation: idleBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes idleBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-8px); }
+        }
+
+        /* Hungry - stomach grumbling! */
+        .hungry .chick {
+            animation: hungryHop 1.5s ease-in-out infinite;
+        }
+
+        .hungry .head {
+            animation: hungryLookDown 2s ease-in-out infinite;
+        }
+
+        .hungry .wing {
+            animation: hungryWiggle 0.6s ease-in-out infinite;
+        }
+
+        .hungry .body {
+            animation: stomachGrumble 1.5s ease-in-out infinite;
+        }
+
+        .hungry .rumble-lines {
+            display: block;
+        }
+
+        @keyframes hungryHop {
+            0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+            20% { transform: translateX(-50%) translateY(-5px) rotate(-1deg); }
+            40% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+            50% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+            55% { transform: translateX(-50%) translateY(2px) rotate(0deg); }
+            60% { transform: translateX(-50%) translateY(-2px) rotate(1deg); }
+            65% { transform: translateX(-50%) translateY(2px) rotate(-1deg); }
+            70% { transform: translateX(-50%) translateY(-1px) rotate(0deg); }
+            75% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+        }
+
+        @keyframes hungryLookDown {
+            0%, 40%, 100% { transform: translateX(-50%) rotate(0deg); }
+            50% { transform: translateX(-50%) rotate(10deg) translateY(3px); }
+            70% { transform: translateX(-50%) rotate(5deg) translateY(1px); }
+        }
+
+        @keyframes hungryWiggle {
+            0%, 100% { transform: rotate(-15deg); }
+            50% { transform: rotate(-25deg); }
+        }
+
+        @keyframes stomachGrumble {
+            0%, 45%, 80%, 100% { transform: scale(1); border-radius: 50%; }
+            50% { transform: scale(1.06, 0.96); border-radius: 48%; }
+            55% { transform: scale(0.97, 1.04); border-radius: 50%; }
+            60% { transform: scale(1.04, 0.97); border-radius: 49%; }
+            65% { transform: scale(0.98, 1.03); border-radius: 50%; }
+            70% { transform: scale(1.02, 0.99); border-radius: 50%; }
+        }
+
+        /* Rumble lines around belly */
+        .rumble-lines {
+            display: none;
+            position: absolute;
+            width: 140%;
+            height: 100%;
+            left: -20%;
+            top: 0;
+            pointer-events: none;
+        }
+
+        .rumble-line {
+            position: absolute;
+            width: 12px;
+            height: 3px;
+            background: #ff9800;
+            border-radius: 3px;
+            opacity: 0;
+            animation: rumblePulse 1.5s ease-in-out infinite;
+        }
+
+        .rumble-line:nth-child(1) { left: -5px; top: 40%; transform: rotate(-20deg); animation-delay: 0.5s; }
+        .rumble-line:nth-child(2) { left: -8px; top: 55%; transform: rotate(10deg); animation-delay: 0.6s; }
+        .rumble-line:nth-child(3) { right: -5px; top: 40%; transform: rotate(20deg); animation-delay: 0.55s; }
+        .rumble-line:nth-child(4) { right: -8px; top: 55%; transform: rotate(-10deg); animation-delay: 0.65s; }
+
+        @keyframes rumblePulse {
+            0%, 40%, 80%, 100% { opacity: 0; transform: translateX(0) scaleX(1); }
+            50% { opacity: 0.8; transform: translateX(-3px) scaleX(1.3); }
+            60% { opacity: 0.5; transform: translateX(2px) scaleX(0.8); }
+            70% { opacity: 0.3; transform: translateX(-1px) scaleX(1); }
+        }
+
+        /* Thirsty - sad and droopy, wants water */
+        .thirsty .chick {
+            animation: thirstySadSway 3s ease-in-out infinite;
+        }
+
+        .thirsty .head {
+            animation: thirstySadHead 3s ease-in-out infinite;
+        }
+
+        .thirsty .eye {
+            animation: sadEyes 3s ease-in-out infinite;
+        }
+
+        .thirsty .wing {
+            animation: sadDroop 3s ease-in-out infinite;
+        }
+
+        .thirsty .beak-bottom {
+            animation: sadMouth 3s ease-in-out infinite;
+        }
+
+        .thirsty .cheek {
+            opacity: 0.3;
+        }
+
+        .thirsty .tears {
+            display: block;
+        }
+
+        @keyframes thirstySadSway {
+            0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+            50% { transform: translateX(-50%) translateY(4px) rotate(-2deg); }
+        }
+
+        @keyframes thirstySadHead {
+            0%, 100% { transform: translateX(-50%) rotate(-5deg) translateY(2px); }
+            50% { transform: translateX(-50%) rotate(-8deg) translateY(5px); }
+        }
+
+        @keyframes sadEyes {
+            0%, 100% { transform: scaleY(0.6) scaleX(1) translateY(2px); }
+            50% { transform: scaleY(0.5) scaleX(1.05) translateY(3px); }
+        }
+
+        @keyframes sadDroop {
+            0%, 100% { transform: rotate(-5deg) translateY(8px); }
+            50% { transform: rotate(-2deg) translateY(10px); }
+        }
+
+        @keyframes sadMouth {
+            0%, 100% { transform: scaleX(0.7) translateY(1px); }
+            50% { transform: scaleX(0.6) translateY(2px); }
+        }
+
+        /* Tear drops */
+        .tears {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        .tear {
+            position: absolute;
+            width: 6px;
+            height: 8px;
+            background: linear-gradient(180deg, #90caf9 0%, #64b5f6 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0;
+            animation: tearFall 2s ease-in infinite;
+        }
+
+        .tear::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            top: 1px;
+            left: 1px;
+        }
+
+        .tear.left-tear { left: 18px; top: 35px; }
+        .tear.right-tear { right: 18px; top: 35px; animation-delay: 1s; }
+
+        @keyframes tearFall {
+            0% { opacity: 0; transform: translateY(0) scale(0.5); }
+            10% { opacity: 0.9; transform: translateY(0) scale(1); }
+            90% { opacity: 0.6; transform: translateY(30px) scale(0.8); }
+            100% { opacity: 0; transform: translateY(35px) scale(0.3); }
+        }
+
+        /* Tired - sleepy droopy cute */
+        .tired .chick {
+            animation: tiredSway 4s ease-in-out infinite;
+        }
+
+        .tired .head {
+            animation: tiredNod 4s ease-in-out infinite;
+        }
+
+        .tired .eye {
+            animation: sleepyEyes 4s ease-in-out infinite;
+        }
+
+        .tired .wing {
+            animation: tiredDroop 4s ease-in-out infinite;
+        }
+
+        @keyframes tiredSway {
+            0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+            50% { transform: translateX(-50%) translateY(5px) rotate(2deg); }
+        }
+
+        @keyframes tiredNod {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            25% { transform: translateX(-50%) rotate(3deg); }
+            50% { transform: translateX(-50%) rotate(8deg) translateY(3px); }
+            75% { transform: translateX(-50%) rotate(3deg); }
+        }
+
+        @keyframes sleepyEyes {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(0.15); }
+        }
+
+        @keyframes tiredDroop {
+            0%, 100% { transform: rotate(-15deg) translateY(0); }
+            50% { transform: rotate(-5deg) translateY(5px); }
+        }
+
+        /* Wet - gentle shake with happy expression */
+        .wet .chick {
+            animation: wetShake 0.4s ease-in-out infinite;
+        }
+
+        .wet .wing.left {
+            animation: wetFlapLeft 0.2s ease-in-out infinite;
+        }
+
+        .wet .wing.right {
+            animation: wetFlapRight 0.2s ease-in-out infinite;
+        }
+
+        .wet .head {
+            animation: wetHead 0.4s ease-in-out infinite;
+        }
+
+        @keyframes wetShake {
+            0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+            25% { transform: translateX(-52%) translateY(-3px) rotate(-3deg); }
+            75% { transform: translateX(-48%) translateY(-3px) rotate(3deg); }
+        }
+
+        @keyframes wetFlapLeft {
+            0%, 100% { transform: rotate(-15deg); }
+            50% { transform: rotate(-40deg); }
+        }
+
+        @keyframes wetFlapRight {
+            0%, 100% { transform: rotate(15deg); }
+            50% { transform: rotate(40deg); }
+        }
+
+        @keyframes wetHead {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            25% { transform: translateX(-50%) rotate(-5deg); }
+            75% { transform: translateX(-50%) rotate(5deg); }
+        }
+
+        /* Cute water drops */
+        .water-drops {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            left: -25%;
+            top: -50%;
+            pointer-events: none;
+            display: none;
+        }
+
+        .wet .water-drops {
+            display: block;
+        }
+
+        .drop {
+            position: absolute;
+            width: 8px;
+            height: 10px;
+            background: linear-gradient(180deg, #81d4fa 0%, #4fc3f7 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0;
+            animation: dropFloat 1s ease-out infinite;
+        }
+
+        .drop::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+        }
+
+        @keyframes dropFloat {
+            0% { opacity: 0.9; transform: translateY(0) rotate(0deg) scale(1); }
+            100% { opacity: 0; transform: translateY(40px) rotate(20deg) scale(0.5); }
+        }
+
+        /* Floating particles - hearts and stars */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            font-size: 18px;
+            opacity: 0;
+            animation: particleRise 2.5s ease-out infinite;
+        }
+
+        @keyframes particleRise {
+            0% { opacity: 0.9; transform: translateY(0) scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(-50px) scale(0.6) rotate(15deg); }
+        }
+
+        /* Status badge */
+        .status {
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .hungry .status { background: linear-gradient(135deg, #ffb74d, #ff9800); }
+        .thirsty .status { background: linear-gradient(135deg, #64b5f6, #2196f3); }
+        .tired .status { background: linear-gradient(135deg, #ce93d8, #9c27b0); }
+        .wet .status { background: linear-gradient(135deg, #90a4ae, #607d8b); }
+
+        /* Control buttons */
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .controls button {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+
+        .controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+        }
+
+        .controls button.active {
+            transform: scale(1.08);
+            border: 2px solid white;
+        }
+
+        .btn-hungry { background: linear-gradient(135deg, #ffb74d, #ff9800); }
+        .btn-thirsty { background: linear-gradient(135deg, #64b5f6, #2196f3); }
+        .btn-tired { background: linear-gradient(135deg, #ce93d8, #9c27b0); }
+        .btn-wet { background: linear-gradient(135deg, #90a4ae, #607d8b); }
+        .btn-happy { background: linear-gradient(135deg, #aed581, #7cb342); }
+
+        .happy .status { background: linear-gradient(135deg, #aed581, #7cb342); }
+
+        /* Happy - cheerful bouncing like the cute stock video */
+        .happy .chick {
+            animation: happyBounce 0.6s ease-in-out infinite;
+        }
+
+        .happy .head {
+            animation: happyHead 0.6s ease-in-out infinite;
+        }
+
+        .happy .wing.left {
+            animation: happyWingLeft 0.3s ease-in-out infinite;
+        }
+
+        .happy .wing.right {
+            animation: happyWingRight 0.3s ease-in-out infinite;
+        }
+
+        .happy .eye {
+            animation: happyEyes 0.6s ease-in-out infinite;
+        }
+
+        .happy .cheek {
+            animation: happyCheeks 0.6s ease-in-out infinite;
+        }
+
+        @keyframes happyBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
+            50% { transform: translateX(-50%) translateY(-20px) scale(1.05); }
+        }
+
+        @keyframes happyHead {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            25% { transform: translateX(-50%) rotate(-8deg); }
+            75% { transform: translateX(-50%) rotate(8deg); }
+        }
+
+        @keyframes happyWingLeft {
+            0%, 100% { transform: rotate(-15deg); }
+            50% { transform: rotate(-50deg) translateY(-5px); }
+        }
+
+        @keyframes happyWingRight {
+            0%, 100% { transform: rotate(15deg); }
+            50% { transform: rotate(50deg) translateY(-5px); }
+        }
+
+        @keyframes happyEyes {
+            0%, 40%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.3); }
+        }
+
+        @keyframes happyCheeks {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* Soft floating clouds */
+        .clouds {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255,255,255,0.7);
+            border-radius: 50%;
+            animation: cloudDrift 40s linear infinite;
+            transition: all 0.8s ease;
+        }
+
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255,255,255,0.7);
+            border-radius: 50%;
+            transition: all 0.8s ease;
+        }
+
+        /* Dark storm clouds when wet */
+        .wet-clouds .cloud {
+            background: rgba(80, 80, 100, 0.8);
+            transform: scale(1.5);
+        }
+
+        .wet-clouds .cloud::before,
+        .wet-clouds .cloud::after {
+            background: rgba(80, 80, 100, 0.8);
+        }
+
+        /* Rain overlay */
+        .rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: none;
+            z-index: 100;
+        }
+
+        .wet ~ .rain,
+        body.wet-bg .rain {
+            display: block;
+        }
+
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 15px;
+            background: linear-gradient(180deg, transparent 0%, rgba(174, 194, 224, 0.6) 100%);
+            border-radius: 0 0 2px 2px;
+            animation: rainFall linear infinite;
+        }
+
+        @keyframes rainFall {
+            0% { transform: translateY(-20px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        @keyframes cloudDrift {
+            0% { transform: translateX(-150px); }
+            100% { transform: translateX(calc(100vw + 150px)); }
+        }
+    </style>
+</head>
+<body>
+    <div class="clouds">
+        <div class="cloud" style="width: 80px; height: 30px; top: 25px; animation-delay: 0s;"></div>
+        <div class="cloud" style="width: 100px; height: 35px; top: 60px; animation-delay: -15s;"></div>
+        <div class="cloud" style="width: 60px; height: 25px; top: 100px; animation-delay: -25s;"></div>
+    </div>
+
+    <h1>🐤 Dilly the Duck — LSEGling</h1>
+
+    <div id="app" class="happy">
+        <div class="status" id="status">😊 Happy - Feeling great!</div>
+
+        <div class="scene">
+            <div class="particles" id="particles"></div>
+            
+            <div class="chick">
+                <div class="water-drops">
+                    <div class="drop" style="left: 25%; top: 20%; animation-delay: 0s;"></div>
+                    <div class="drop" style="left: 60%; top: 15%; animation-delay: 0.15s;"></div>
+                    <div class="drop" style="left: 40%; top: 25%; animation-delay: 0.3s;"></div>
+                    <div class="drop" style="left: 75%; top: 30%; animation-delay: 0.45s;"></div>
+                    <div class="drop" style="left: 15%; top: 35%; animation-delay: 0.6s;"></div>
+                </div>
+
+                <div class="head">
+                    <div class="eyes">
+                        <div class="eye"></div>
+                        <div class="eye"></div>
+                    </div>
+                    <div class="cheek left"></div>
+                    <div class="cheek right"></div>
+                    <div class="beak">
+                        <div class="beak-top"></div>
+                        <div class="beak-bottom"></div>
+                    </div>
+                    <div class="tears">
+                        <div class="tear left-tear"></div>
+                        <div class="tear right-tear"></div>
+                    </div>
+                </div>
+                
+                <div class="body">
+                    <div class="wing left"></div>
+                    <div class="wing right"></div>
+                    <div class="rumble-lines">
+                        <div class="rumble-line"></div>
+                        <div class="rumble-line"></div>
+                        <div class="rumble-line"></div>
+                        <div class="rumble-line"></div>
+                    </div>
+                </div>
+                
+                <div class="tail">
+                    <div class="tail-feather"></div>
+                    <div class="tail-feather"></div>
+                    <div class="tail-feather"></div>
+                </div>
+                
+                <div class="feet">
+                    <div class="foot"></div>
+                    <div class="foot"></div>
+                </div>
+            </div>
+
+            <div class="ground">
+                <span class="flower">🌸</span>
+                <span class="flower">🌼</span>
+                <span class="flower">🌷</span>
+            </div>
+        </div>
+
+        <div class="rain" id="rain"></div>
+
+        <div class="controls">
+            <button class="btn-happy active" onclick="setState('happy')">😊 Happy</button>
+            <button class="btn-hungry" onclick="setState('hungry')">🍞 Hungry</button>
+            <button class="btn-thirsty" onclick="setState('thirsty')">💧 Thirsty</button>
+            <button class="btn-tired" onclick="setState('tired')">😴 Tired</button>
+            <button class="btn-wet" onclick="setState('wet')">🌧️ Wet</button>
+        </div>
+    </div>
+
+    <script>
+        const states = {
+            happy: { label: '😊 Dilly is Happy - Feeling great!', particle: '💛' },
+            hungry: { label: '🍞 Dilly is Hungry - Tummy is grumbling...!', particle: '🍗' },
+            thirsty: { label: '💧 Dilly is Thirsty - So sad... need water...', particle: '💧' },
+            tired: { label: '😴 Dilly is Tired - So sleepy... zzz', particle: '💤' },
+            wet: { label: '🌧️ Dilly is Wet - It\'s pouring out here!', particle: '💦' }
+        };
+
+        let currentState = 'happy';
+        let particleInterval;
+
+        function setState(state) {
+            currentState = state;
+            document.getElementById('app').className = state;
+            document.getElementById('status').textContent = states[state].label;
+
+            document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.btn-${state}`).classList.add('active');
+
+            // Dark rainy background for wet state
+            if (state === 'wet') {
+                document.body.classList.add('wet-bg');
+                document.querySelector('.clouds').classList.add('wet-clouds');
+                document.getElementById('rain').style.display = 'block';
+            } else {
+                document.body.classList.remove('wet-bg');
+                document.querySelector('.clouds').classList.remove('wet-clouds');
+                document.getElementById('rain').style.display = 'none';
+            }
+
+            startParticles();
+        }
+
+        function createParticle() {
+            const particles = document.getElementById('particles');
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.textContent = states[currentState].particle;
+            
+            const x = 130 + (Math.random() - 0.5) * 80;
+            const y = 180 + Math.random() * 40;
+            
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.animationDelay = `${Math.random() * 0.3}s`;
+            
+            particles.appendChild(particle);
+            setTimeout(() => particle.remove(), 2500);
+        }
+
+        function startParticles() {
+            if (particleInterval) clearInterval(particleInterval);
+            document.getElementById('particles').innerHTML = '';
+            
+            const intervals = { hungry: 500, thirsty: 600, tired: 1200, wet: 300 };
+            particleInterval = setInterval(createParticle, intervals[currentState]);
+        }
+
+        // Generate rain drops
+        function createRain() {
+            const rain = document.getElementById('rain');
+            for (let i = 0; i < 60; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'raindrop';
+                drop.style.left = Math.random() * 100 + '%';
+                drop.style.animationDuration = (0.5 + Math.random() * 0.5) + 's';
+                drop.style.animationDelay = Math.random() * 2 + 's';
+                drop.style.height = (10 + Math.random() * 12) + 'px';
+                rain.appendChild(drop);
+            }
+        }
+        createRain();
+
+        startParticles();
+    </script>
+</body>
+</html>
