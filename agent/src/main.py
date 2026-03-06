@@ -18,7 +18,7 @@ agent = Agent(
 )
 
 # Define compliance tools
-@agent.tool
+@tool
 def get_compliance_framework(framework_id: str) -> dict:
     """Get compliance framework details"""
     frameworks = {
@@ -49,7 +49,7 @@ def get_compliance_framework(framework_id: str) -> dict:
     }
     return frameworks.get(framework_id, {"error": "Framework not found"})
 
-@agent.tool
+@tool
 def get_project_controls(project_id: str) -> dict:
     """Get compliance controls for a project"""
     controls = {
@@ -76,7 +76,7 @@ def get_project_controls(project_id: str) -> dict:
     }
     return controls.get(project_id, {"error": "Project not found"})
 
-@agent.tool
+@tool
 def evaluate_response(control_id: str, response: str) -> dict:
     """Evaluate a compliance response"""
     return {
@@ -88,7 +88,7 @@ def evaluate_response(control_id: str, response: str) -> dict:
         "lsegling_message": "Your LSEGling was given shelter 🏠"
     }
 
-@agent.tool
+@tool
 def get_remediation_guidance(control_id: str, gap: str) -> dict:
     """Get remediation guidance for a compliance gap"""
     return {
@@ -107,7 +107,7 @@ def get_remediation_guidance(control_id: str, gap: str) -> dict:
         ]
     }
 
-@agent.tool
+@tool
 def save_response(project_id: str, control_id: str, response: str, status: str) -> dict:
     """Save a compliance response"""
     return {

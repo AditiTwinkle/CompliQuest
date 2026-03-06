@@ -1,0 +1,112 @@
+{
+  "success": true,
+  "policies": [
+    {
+      "id": "1",
+      "title": "Operational Resilience",
+      "question": "Your organization lacks adequate Operational Resilience controls. No organizational control found to address requirement \"ICT Risk Management Framework\" What should be your immediate priority?",
+      "answers": [
+        "Implement comprehensive risk assessment procedures with executive oversight",
+        "Schedule a meeting to discuss the issue",
+        "Document the gap for future consideration",
+        "Ignore the requirement as non-critical"
+      ],
+      "correctAnswer": "Implement comprehensive risk assessment procedures with executive oversight",
+      "complianceProperty": "dora-policy-1-compliant",
+      "icon": "💪",
+      "successMessage": "Your operational resilience is improved!",
+      "severity": "critical"
+    },
+    {
+      "id": "2",
+      "title": "Risk Management",
+      "question": "Your organization lacks adequate Risk Management controls. No organizational control found to address requirement \"Governance and Organisation\" What should be your immediate priority?",
+      "answers": [
+        "Implement comprehensive risk assessment procedures with executive oversight",
+        "Schedule a meeting to discuss the issue",
+        "Document the gap for future consideration",
+        "Ignore the requirement as non-critical"
+      ],
+      "correctAnswer": "Implement comprehensive risk assessment procedures with executive oversight",
+      "complianceProperty": "dora-policy-2-compliant",
+      "icon": "⚠️",
+      "successMessage": "Your organization improved risk management!",
+      "severity": "high"
+    },
+    {
+      "id": "3",
+      "title": "Incident Management",
+      "question": "Your organization lacks adequate Incident Management controls. No organizational control found to address requirement \"Classification of ICT-related incidents\" What should be your immediate priority?",
+      "answers": [
+        "Implement comprehensive incident response procedures with executive oversight",
+        "Schedule a meeting to discuss the issue",
+        "Document the gap for future consideration",
+        "Ignore the requirement as non-critical"
+      ],
+      "correctAnswer": "Implement comprehensive incident response procedures with executive oversight",
+      "complianceProperty": "dora-policy-3-compliant",
+      "icon": "🚨",
+      "successMessage": "Your incident response is enhanced!",
+      "severity": "critical"
+    },
+    {
+      "id": "4",
+      "title": "Vendor Management",
+      "question": "Your organization lacks adequate Vendor Management controls. No organizational control found to address requirement \"General principles for ICT third-party risk\" What should be your immediate priority?",
+      "answers": [
+        "Implement comprehensive vendor risk assessment with executive oversight",
+        "Schedule a meeting to discuss the issue",
+        "Document the gap for future consideration",
+        "Ignore the requirement as non-critical"
+      ],
+      "correctAnswer": "Implement comprehensive vendor risk assessment with executive oversight",
+      "complianceProperty": "dora-policy-4-compliant",
+      "icon": "🤝",
+      "successMessage": "Your vendor risk controls are improved!",
+      "severity": "high"
+    }
+  ],
+  "alerts": [
+    {
+      "id": "policy-1",
+      "title": "Operational Resilience",
+      "message": "No organizational control found to address requirement \"ICT Risk Management Framework\"",
+      "severity": "critical",
+      "status": "open"
+    },
+    {
+      "id": "policy-2",
+      "title": "Risk Management",
+      "message": "No organizational control found to address requirement \"Governance and Organisation\"",
+      "severity": "high",
+      "status": "open"
+    },
+    {
+      "id": "policy-3",
+      "title": "Incident Management",
+      "message": "No organizational control found to address requirement \"Classification of ICT-related incidents\"",
+      "severity": "critical",
+      "status": "open"
+    },
+    {
+      "id": "policy-4",
+      "title": "Vendor Management",
+      "message": "No organizational control found to address requirement \"General principles for ICT third-party risk\"",
+      "severity": "high",
+      "status": "open"
+    }
+  ],
+  "timestamp": "2026-03-06T14:30:00.000Z",
+  "metadata": {
+    "organizationId": "org-demo-bank-001",
+    "organizationName": "Demo Financial Services Ltd",
+    "frameworkId": "dora-2022",
+    "frameworkName": "Digital Operational Resilience Act (DORA)",
+    "compliance": {
+      "overallPercentage": 53,
+      "totalGaps": 68,
+      "highPriorityGaps": 59
+    }
+  },
+  "message": "Generated 4 compliance policies from 68 identified gaps (53% compliance)."
+}
