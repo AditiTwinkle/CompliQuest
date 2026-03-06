@@ -90,7 +90,7 @@ export default function NotificationCenter({ alerts = [], projects = [] }: Notif
                           className="p-3 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"
                         >
                           <div className="flex items-start gap-2">
-                            <span className="text-xl">{icons[iconIndex] || '⚠️'}</span>
+                            <span className="text-3xl">{icons[iconIndex] || '⚠️'}</span>
                             <div className="flex-1">
                               <p className="text-sm font-bold text-gray-900">
                                 Policy {policyNumber}: {alert.title}

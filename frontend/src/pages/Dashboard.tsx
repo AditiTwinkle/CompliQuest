@@ -120,7 +120,7 @@ export default function Dashboard() {
                   return (
                     <div key={alert.id} className="duo-error-box flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-3xl">{icons[iconIndex] || '⚠️'}</span>
+                        <span className="text-5xl">{icons[iconIndex] || '⚠️'}</span>
                         <div>
                           <p className="font-bold text-[var(--duo-text-primary)]">Policy {policyNumber}: {alert.title}</p>
                           <p className="text-sm text-[var(--duo-text-secondary)]">{alert.message}</p>
@@ -163,7 +163,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {projects.map((project) => {
                 const hasNonCompliantIssues = project.nonCompliantControls > 0;
-                
+
                 return (
                   <div
                     key={project.id}
@@ -183,19 +183,17 @@ export default function Dashboard() {
                     <div className="mb-4">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm font-bold text-[var(--duo-text-secondary)]">Compliance Status</span>
-                        <span className={`text-xl font-bold ${
-                          project.complianceScore === 100 
-                            ? 'text-green-600' 
+                        <span className={`text-xl font-bold ${project.complianceScore === 100
+                            ? 'text-green-600'
                             : 'text-orange-600'
-                        }`}>
+                          }`}>
                           {project.complianceScore}%
                         </span>
                       </div>
                       <div className="duo-progress-bar">
                         <div
-                          className={`duo-progress-fill ${
-                            project.complianceScore === 100 ? 'bg-green-500' : ''
-                          }`}
+                          className={`duo-progress-fill ${project.complianceScore === 100 ? 'bg-green-500' : ''
+                            }`}
                           style={{ width: `${project.complianceScore}%` }}
                         />
                       </div>
@@ -204,14 +202,12 @@ export default function Dashboard() {
                       </p>
                     </div>
 
-                    <div className={`mb-4 p-3 rounded-lg border ${
-                      project.complianceScore === 100 
-                        ? 'bg-green-50 border-green-200' 
+                    <div className={`mb-4 p-3 rounded-lg border ${project.complianceScore === 100
+                        ? 'bg-green-50 border-green-200'
                         : 'bg-orange-50 border-orange-200'
-                    }`}>
-                      <p className={`text-xs font-bold mb-1 ${
-                        project.complianceScore === 100 ? 'text-green-900' : 'text-orange-900'
                       }`}>
+                      <p className={`text-xs font-bold mb-1 ${project.complianceScore === 100 ? 'text-green-900' : 'text-orange-900'
+                        }`}>
                         Regulatory Compliance Results:
                       </p>
                       <div className="flex items-center justify-between text-xs">
@@ -229,17 +225,16 @@ export default function Dashboard() {
                             ⚠️ Non-compliant issues are affecting your LSEGling's health
                           </p>
                         </div>
-                        <button 
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             navigate('/', { state: { scrollToGaps: true } });
                           }}
                           disabled={urgentAlerts.length === 0}
-                          className={`w-full duo-button-primary ${
-                            urgentAlerts.length === 0 
-                              ? 'bg-gray-400 cursor-not-allowed opacity-60' 
+                          className={`w-full duo-button-primary ${urgentAlerts.length === 0
+                              ? 'bg-gray-400 cursor-not-allowed opacity-60'
                               : 'bg-orange-600 hover:bg-orange-700'
-                          }`}
+                            }`}
                         >
                           {urgentAlerts.length === 0 ? '✅ All Gaps Resolved' : '🔧 Resolve Compliance Issues'}
                         </button>
