@@ -9,7 +9,33 @@ export interface Alert {
 }
 
 /**
+ * DUCK STATE WORKFLOW LOGIC:
+ * 
+ * Default State: happy
+ * - All questions are compliant = true
+ * - No actions or remediation needed
+ * 
+ * Non-Compliant States: hungry, thirsty, wet, tired
+ * - When compliant = false, duck enters distress state(s)
+ * - Each policy type maps to a specific state
+ * - Multiple non-compliant questions = multiple states (e.g., hungry + wet)
+ * 
+ * State Resolution:
+ * - User resolves question → compliant = true
+ * - Duck state updates (removes resolved state)
+ * - When all resolved → duck returns to happy
+ * 
+ * Future Implementation:
+ * - Policy type mappings will be configured based on real data
+ * - Each policy change maps to a different duck state
+ * - System will accept compliance question data with compliant boolean
+ */
+
+/**
  * Get all applicable states for the duck (supports multi-state)
+ * 
+ * Current: Uses alert keywords to determine states
+ * Future: Will use question.compliant and question.policyType
  */
 export function determineAvatarStates(alerts: Alert[]): AvatarState[] {
   if (!alerts || alerts.length === 0) {
@@ -27,7 +53,19 @@ export function determineAvatarStates(alerts: Alert[]): AvatarState[] {
   const alertMessages = activeAlerts.map(a => a.message.toLowerCase());
   const allText = [...alertTitles, ...alertMessages].join(' ');
 
-  // Check for each state type
+  // TODO: Replace with policy type mapping when real data is available
+  // Example future implementation:
+  // const policyToStateMap = {
+  //   food: 'hungry',
+  //   water: 'thirsty',
+  //   shelter: 'wet',
+  //   rest: 'tired'
+  // };
+  // return questions
+  //   .filter(q => !q.compliant && q.requiresRemediation)
+  //   .map(q => policyToStateMap[q.policyType]);
+
+  // Check for each state type based on keywords
   if (allText.includes('malnutrition') || allText.includes('food') || allText.includes('hungry') || allText.includes('nutrition')) {
     states.push('hungry');
   }
