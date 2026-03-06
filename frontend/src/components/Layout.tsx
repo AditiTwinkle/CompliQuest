@@ -8,11 +8,22 @@ function Layout() {
   const { alerts, projects, refreshData } = useNotifications();
 
   const handleDemoReset = () => {
-    // Reset all policy compliance states to non-compliant
-    localStorage.removeItem('hungry-compliant');
-    localStorage.removeItem('wet-compliant');
-    localStorage.removeItem('tired-compliant');
-    localStorage.removeItem('thirsty-compliant');
+    // Clear all localStorage keys that end with '-compliant'
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.endsWith('-compliant')) {
+        keysToRemove.push(key);
+      }
+    }
+
+    // Remove all compliance keys
+    keysToRemove.forEach(key => {
+      console.log('Removing localStorage key:', key);
+      localStorage.removeItem(key);
+    });
+
+    console.log('Demo reset: cleared', keysToRemove.length, 'compliance keys');
 
     // Reload the data
     refreshData();

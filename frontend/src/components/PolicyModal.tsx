@@ -13,7 +13,8 @@ interface PolicyConfig {
     successMessage: string;
 }
 
-const POLICIES: Record<string, PolicyConfig> = {
+// Fallback policies in case agent is not available
+const FALLBACK_POLICIES: Record<string, PolicyConfig> = {
     '1': {
         id: '1',
         title: 'Malnutrition',
@@ -87,9 +88,30 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ policyId, isOpen, onCl
     const [showError, setShowError] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const confettiRef = useRef<ConfettiRef>(null);
-    const { refreshData } = useNotifications();
+    const { policies, refreshData } = useNotifications();
+
+    // Convert policies array to Record for easy lookup
+    const policiesMap = policies.reduce((acc, policy) => {
+        acc[policy.id] = policy;
+        return acc;
+    }, {} as Record<string, PolicyConfig>);
+
+    // Use agent policies if available, otherwise fallback
+    const POLICIES = Object.keys(policiesMap).length > 0 ? policiesMap : FALLBACK_POLICIES;
 
     const policy = policyId ? POLICIES[policyId] : null;
+
+    // Log which policies are being used
+    useEffect(() => {
+        if (isOpen && policyId) {
+            console.log('PolicyModal opened:', {
+                source: Object.keys(policiesMap).length > 0 ? 'regulatory-compliance-agent' : 'fallback',
+                policyId,
+                policyTitle: policy?.title,
+                policyQuestion: policy?.question
+            });
+        }
+    }, [isOpen, policyId, policy, policiesMap]);
 
     useEffect(() => {
         if (showSuccess && confettiRef.current) {
@@ -147,18 +169,20 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ policyId, isOpen, onCl
             // Refresh data immediately to update duck and project cards
             refreshData();
             setTimeout(() => {
+                onClose();
+                // Reset modal state
                 setShowSuccess(false);
                 setIsSubmitting(false);
-                onClose();
             }, 2000);
         } else {
             setShowError(true);
             // Refresh data to show the error state
             refreshData();
             setTimeout(() => {
+                onClose();
+                // Reset modal state
                 setShowError(false);
                 setIsSubmitting(false);
-                onClose();
             }, 2000);
         }
     };

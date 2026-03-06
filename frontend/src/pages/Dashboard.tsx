@@ -91,7 +91,7 @@ export default function Dashboard() {
         {/* Alert Section */}
         {urgentAlerts.length > 0 ? (
           <>
-            <div className="duo-card bounce-in">
+            <div className="duo-card">
               <div className="text-center">
                 <div className="flex justify-center mb-4">
                   <LSEGlingAvatar
@@ -140,7 +140,7 @@ export default function Dashboard() {
             </div>
           </>
         ) : (
-          <div className="duo-card bounce-in">
+          <div className="duo-card">
             <div className="text-center">
               <h2 className="text-2xl font-bold text-[var(--duo-text-primary)] mb-4">
                 ✨ Everything looks great!

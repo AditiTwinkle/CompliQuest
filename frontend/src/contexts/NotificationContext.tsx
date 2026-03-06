@@ -51,21 +51,44 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+
       // Try to fetch from regulatory compliance agent
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
       const organizationId = 'org-demo-bank-001'; // Demo organization
-      
+
       try {
         const response = await fetch(`${apiUrl}/compliance-agent/analyze/${organizationId}`);
-        
+
+        console.log('Compliance agent response status:', response.status);
+
         if (response.ok) {
           const data = await response.json();
-          
-          // Use agent-generated alerts and policies
-          setAlerts(data.alerts || []);
+
+          console.log('Compliance agent data received:', {
+            alertsCount: data.alerts?.length,
+            policiesCount: data.policies?.length,
+            compliancePercentage: data.metadata?.compliance?.overallPercentage
+          });
+
+          // Filter out policies that have been marked as compliant in localStorage
+          const filteredAlerts = data.alerts?.filter((alert: Alert) => {
+            // Find the corresponding policy
+            const policy = data.policies?.find((p: PolicyConfig) => `policy-${p.id}` === alert.id);
+            if (!policy) return true; // Keep alert if no matching policy found
+
+            // Check if this policy has been marked as compliant
+            const isCompliant = localStorage.getItem(policy.complianceProperty) === 'true';
+            console.log(`Policy ${policy.id} (${policy.complianceProperty}):`, isCompliant ? 'compliant - hiding' : 'non-compliant - showing');
+
+            return !isCompliant; // Only show non-compliant policies
+          }) || [];
+
+          console.log(`Filtered alerts: ${data.alerts?.length || 0} -> ${filteredAlerts.length}`);
+
+          // Use agent-generated alerts (filtered) and policies
+          setAlerts(filteredAlerts);
           setPolicies(data.policies || []);
-          
+
           // Keep mock projects for now
           const mockProjects: Project[] = [
             {
@@ -80,12 +103,15 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
           ];
           setProjects(mockProjects);
           setLoading(false);
+          console.log('Successfully loaded data from compliance agent');
           return;
+        } else {
+          console.warn('Compliance agent returned non-OK status:', response.status);
         }
       } catch (agentError) {
         console.warn('Failed to fetch from compliance agent, falling back to localStorage:', agentError);
       }
-      
+
       // Fallback to localStorage-based alerts
       const hungryCompliant = localStorage.getItem('hungry-compliant') === 'true';
       const wetCompliant = localStorage.getItem('wet-compliant') === 'true';

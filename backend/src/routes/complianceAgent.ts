@@ -5,7 +5,7 @@ import logger from '../utils/logger';
 const router = Router();
 
 // Regulatory Compliance Agent endpoint
-const COMPLIANCE_AGENT_URL = process.env.COMPLIANCE_AGENT_URL || 'http://localhost:8001';
+const COMPLIANCE_AGENT_URL = process.env.COMPLIANCE_AGENT_URL || 'http://localhost:3001';
 
 // GET /compliance-agent/analyze/:organizationId
 // Get DORA compliance analysis with policies and alerts
@@ -17,9 +17,9 @@ router.get('/analyze/:organizationId', async (req, res: Response) => {
 
     // Call the regulatory compliance agent
     const response = await axios.post(
-      `${COMPLIANCE_AGENT_URL}/analyze`,
+      `${COMPLIANCE_AGENT_URL}/api/analyze`,
       {
-        organization_id: organizationId,
+        organizationId: organizationId,
       },
       {
         timeout: 30000,
@@ -28,33 +28,13 @@ router.get('/analyze/:organizationId', async (req, res: Response) => {
 
     const agentData = response.data;
 
-    // Transform agent response to CompliQuest format
-    const policies = agentData.data.policies.map((policy: any) => ({
-      id: policy.id,
-      title: policy.title,
-      question: policy.question,
-      answers: policy.answers,
-      correctAnswer: policy.correctAnswer,
-      complianceProperty: policy.complianceProperty,
-      icon: policy.icon,
-      successMessage: policy.successMessage,
-      severity: policy.severity,
-    }));
-
-    const alerts = agentData.data.alerts.map((alert: any) => ({
-      id: alert.id,
-      title: alert.title,
-      message: alert.message,
-      severity: alert.severity,
-      status: alert.status,
-    }));
-
+    // The agent already returns data in CompliQuest format
     res.json({
-      success: true,
-      policies,
-      alerts,
-      metadata: agentData.data.metadata,
-      timestamp: agentData.data.timestamp,
+      success: agentData.success,
+      policies: agentData.policies,
+      alerts: agentData.alerts,
+      metadata: agentData.metadata,
+      timestamp: agentData.timestamp,
     });
   } catch (error: any) {
     logger.error('Failed to fetch compliance analysis:', error);
@@ -70,7 +50,7 @@ router.get('/analyze/:organizationId', async (req, res: Response) => {
 // Check agent health
 router.get('/health', async (req, res: Response) => {
   try {
-    const response = await axios.get(`${COMPLIANCE_AGENT_URL}/health`, {
+    const response = await axios.get(`${COMPLIANCE_AGENT_URL}/api/health`, {
       timeout: 5000,
     });
     res.json({

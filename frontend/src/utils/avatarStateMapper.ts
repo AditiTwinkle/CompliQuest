@@ -34,53 +34,46 @@ export interface Alert {
 /**
  * Get all applicable states for the duck (supports multi-state)
  * 
- * Current: Uses alert keywords to determine states
- * Future: Will use question.compliant and question.policyType
+ * Maps policy IDs to duck states:
+ * - policy-1 → hungry
+ * - policy-2 → wet
+ * - policy-3 → tired
+ * - policy-4 → thirsty
  */
 export function determineAvatarStates(alerts: Alert[]): AvatarState[] {
   if (!alerts || alerts.length === 0) {
     return ['happy'];
   }
 
-  const activeAlerts = alerts.filter(alert => alert.status === 'active');
+  const activeAlerts = alerts.filter(alert => alert.status === 'active' || alert.status === 'open');
 
   if (activeAlerts.length === 0) {
     return ['happy'];
   }
 
   const states: AvatarState[] = [];
-  const alertTitles = activeAlerts.map(a => a.title.toLowerCase());
-  const alertMessages = activeAlerts.map(a => a.message.toLowerCase());
-  const allText = [...alertTitles, ...alertMessages].join(' ');
 
-  // TODO: Replace with policy type mapping when real data is available
-  // Example future implementation:
-  // const policyToStateMap = {
-  //   food: 'hungry',
-  //   water: 'thirsty',
-  //   shelter: 'wet',
-  //   rest: 'tired'
-  // };
-  // return questions
-  //   .filter(q => !q.compliant && q.requiresRemediation)
-  //   .map(q => policyToStateMap[q.policyType]);
+  // Map policy IDs to duck states
+  const policyToStateMap: Record<string, AvatarState> = {
+    'policy-1': 'hungry',
+    'policy-2': 'wet',
+    'policy-3': 'tired',
+    'policy-4': 'thirsty',
+  };
 
-  // Check for each state type based on keywords
-  if (allText.includes('malnutrition') || allText.includes('food') || allText.includes('hungry') || allText.includes('nutrition')) {
-    states.push('hungry');
-  }
+  // Check each alert's ID and map to corresponding state
+  activeAlerts.forEach(alert => {
+    const state = policyToStateMap[alert.id];
+    if (state && !states.includes(state)) {
+      states.push(state);
+    }
+  });
 
-  if (allText.includes('shelter') || allText.includes('housing') || allText.includes('wet') || allText.includes('homeless') || allText.includes('need shelter')) {
-    states.push('wet');
-  }
-
-  if (allText.includes('sleep') || allText.includes('tired') || allText.includes('fatigue') || allText.includes('exhausted') || allText.includes('need sleep')) {
-    states.push('tired');
-  }
-
-  if (allText.includes('thirst') || allText.includes('water') || allText.includes('hydration') || allText.includes('drink') || allText.includes('need water')) {
-    states.push('thirsty');
-  }
+  console.log('Duck state mapping:', {
+    alertIds: activeAlerts.map(a => a.id),
+    mappedStates: states,
+    finalState: states.length > 0 ? states : ['happy']
+  });
 
   return states.length > 0 ? states : ['happy'];
 }
