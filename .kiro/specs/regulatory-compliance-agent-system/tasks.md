@@ -89,24 +89,24 @@ This implementation plan prioritizes a working MVP for hackathon demonstration o
     - **Property 8: Question Generation Quantity and Format Compliance**
     - **Validates: Requirements 3.1, 3.2, 3.6, 7.1, 7.2**
 
-  - [ ] 6.3 Use Claude for intelligent question creation
+  - [~] 6.3 Use Claude for intelligent question creation
     - Generate engaging multiple-choice questions
     - Create realistic answer options and explanations
     - _Requirements: 3.2, 3.4, 3.5_
 
-  - [ ] 6.4 Format questions for CompliQuest compatibility
+  - [~] 6.4 Format questions for CompliQuest compatibility
     - Transform to required JSON schema
     - Add metadata for difficulty, category, points
     - Include remediation guidance in metadata
     - _Requirements: 7.1, 7.2, 7.3, 3.4_
 
 - [ ] 7. Create API endpoints for integration
-  - [ ] 7.1 Implement main compliance analysis endpoint
+  - [~] 7.1 Implement main compliance analysis endpoint
     - POST /api/analyze - trigger full analysis workflow
     - Return CompliQuest-compatible question array
     - _Requirements: 7.4_
 
-  - [ ] 7.2 Add question retrieval endpoints
+  - [~] 7.2 Add question retrieval endpoints
     - GET /api/questions - retrieve generated questions
     - Support filtering by difficulty and category
     - _Requirements: 7.4, 7.5_
@@ -117,23 +117,23 @@ This implementation plan prioritizes a working MVP for hackathon demonstration o
     - _Requirements: 7.1, 7.6_
 
 - [ ] 8. Implement basic error handling and resilience
-  - [ ] 8.1 Add retry logic for external services
+  - [~] 8.1 Add retry logic for external services
     - Retry failed Bedrock calls with exponential backoff
     - Handle rate limiting gracefully
     - _Requirements: 4.7, 10.4_
 
-  - [ ] 8.2 Implement basic circuit breaker for Bedrock
+  - [~] 8.2 Implement basic circuit breaker for Bedrock
     - Prevent cascading failures when AI services are down
     - Fallback to template-based processing when needed
     - _Requirements: 10.4, 4.6_
 
-  - [ ] 8.3 Add comprehensive logging and monitoring
+  - [~] 8.3 Add comprehensive logging and monitoring
     - Log all major operations and errors
     - Add basic health check endpoint
     - _Requirements: 10.1, 10.2_
 
 - [ ] 9. Final integration and testing
-  - [ ] 9.1 Create end-to-end demo workflow
+  - [~] 9.1 Create end-to-end demo workflow
     - Single API call that demonstrates full capability
     - Mock organizational data for consistent demo results
     - _Requirements: All core requirements_
@@ -142,7 +142,7 @@ This implementation plan prioritizes a working MVP for hackathon demonstration o
     - **Property 1: Regulatory Content Extraction Completeness**
     - **Validates: Requirements 1.1, 1.2, 1.3, 1.4, 5.2, 5.3, 5.4, 5.5, 5.6**
 
-  - [ ] 9.3 Add basic data persistence (optional for MVP)
+  - [~] 9.3 Add basic data persistence (optional for MVP)
     - Simple file-based storage for demo persistence
     - Store extracted requirements and generated questions
     - _Requirements: 8.1, 8.2_
