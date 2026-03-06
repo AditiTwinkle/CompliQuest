@@ -72,6 +72,69 @@ export interface ComplianceQuestion {
   compliQuestMetadata: CompliQuestMetadata;
 }
 
+// Organizational Checklist Model
+export interface OrganizationalChecklist {
+  id: string;
+  organizationId: string;
+  organizationName: string;
+  framework: RegulatoryFramework;
+  controls: OrganizationalControl[];
+  lastUpdated: Date;
+  completionStatus: CompletionStatus;
+  overallMaturity: MaturityLevel;
+  compliancePercentage: number;
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  industry: IndustryType;
+  size: OrganizationSize;
+  jurisdiction: string;
+  establishedDate: Date;
+  regulatoryFrameworks: string[]; // Framework IDs
+}
+
+export interface ComplianceStatus {
+  organizationId: string;
+  frameworkId: string;
+  totalControls: number;
+  implementedControls: number;
+  partiallyImplementedControls: number;
+  notImplementedControls: number;
+  compliancePercentage: number;
+  lastAssessment: Date;
+  nextAssessment: Date;
+}
+
+export interface ControlImplementationDetails {
+  controlId: string;
+  implementationNotes: string;
+  implementationDate?: Date;
+  responsibleTeam: string;
+  budgetAllocated?: number;
+  timeline: ImplementationTimeline;
+  dependencies: string[];
+  risks: string[];
+}
+
+export interface ImplementationTimeline {
+  plannedStartDate: Date;
+  plannedEndDate: Date;
+  actualStartDate?: Date;
+  actualEndDate?: Date;
+  milestones: Milestone[];
+}
+
+export interface Milestone {
+  id: string;
+  name: string;
+  description: string;
+  targetDate: Date;
+  completedDate?: Date;
+  status: MilestoneStatus;
+}
+
 export interface AnswerOption {
   text: string;
   isCorrect: boolean;
@@ -201,6 +264,39 @@ export enum ResourceType {
   TOOL = 'TOOL',
   TRAINING = 'TRAINING',
   TEMPLATE = 'TEMPLATE',
+}
+
+// Additional enums for organizational checklist model
+export enum CompletionStatus {
+  NOT_STARTED = 'NOT_STARTED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  OVERDUE = 'OVERDUE',
+}
+
+export enum IndustryType {
+  BANKING = 'BANKING',
+  INSURANCE = 'INSURANCE',
+  INVESTMENT_SERVICES = 'INVESTMENT_SERVICES',
+  PAYMENT_SERVICES = 'PAYMENT_SERVICES',
+  CREDIT_INSTITUTIONS = 'CREDIT_INSTITUTIONS',
+  FINTECH = 'FINTECH',
+  OTHER_FINANCIAL = 'OTHER_FINANCIAL',
+}
+
+export enum OrganizationSize {
+  SMALL = 'SMALL', // < 50 employees
+  MEDIUM = 'MEDIUM', // 50-250 employees
+  LARGE = 'LARGE', // 250-1000 employees
+  ENTERPRISE = 'ENTERPRISE', // > 1000 employees
+}
+
+export enum MilestoneStatus {
+  NOT_STARTED = 'NOT_STARTED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  DELAYED = 'DELAYED',
+  CANCELLED = 'CANCELLED',
 }
 
 // API Response types
