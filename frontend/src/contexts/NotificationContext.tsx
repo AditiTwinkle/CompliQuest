@@ -94,24 +94,61 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       });
     }
 
+    // Mock projects with dynamic compliance based on resolved gaps
+    // Each project has exactly 1 gap that can be resolved
+    
+    // GDPR has 10 controls: 9 baseline compliant + 1 gap (hungry)
+    const gdprTotalCompliant = hungryCompliant ? 10 : 9;
+    const gdprTotalNonCompliant = hungryCompliant ? 0 : 1;
+
+    // HIPAA has 10 controls: 9 baseline compliant + 1 gap (wet)
+    const hipaaTotalCompliant = wetCompliant ? 10 : 9;
+    const hipaaTotalNonCompliant = wetCompliant ? 0 : 1;
+
+    // SOC 2 has 8 controls: 7 baseline compliant + 1 gap (tired)
+    const soc2TotalCompliant = tiredCompliant ? 8 : 7;
+    const soc2TotalNonCompliant = tiredCompliant ? 0 : 1;
+
+    // ISO 27001 has 12 controls: 11 baseline compliant + 1 gap (thirsty)
+    const isoTotalCompliant = thirstyCompliant ? 12 : 11;
+    const isoTotalNonCompliant = thirstyCompliant ? 0 : 1;
+
     const mockProjects: Project[] = [
       {
         id: 'proj-1',
         name: 'GDPR Compliance Challenge',
         framework: 'GDPR',
-        complianceScore: 45,
+        complianceScore: Math.round((gdprTotalCompliant / 10) * 100),
         totalControls: 10,
-        compliantControls: 4,
-        nonCompliantControls: 6,
+        compliantControls: gdprTotalCompliant,
+        nonCompliantControls: gdprTotalNonCompliant,
       },
       {
         id: 'proj-2',
         name: 'HIPAA Security Challenge',
         framework: 'HIPAA',
-        complianceScore: 60,
+        complianceScore: Math.round((hipaaTotalCompliant / 10) * 100),
         totalControls: 10,
-        compliantControls: 6,
-        nonCompliantControls: 4,
+        compliantControls: hipaaTotalCompliant,
+        nonCompliantControls: hipaaTotalNonCompliant,
+      },
+      {
+        id: 'proj-3',
+        name: 'SOC 2 Compliance Challenge',
+        framework: 'SOC 2',
+        complianceScore: Math.round((soc2TotalCompliant / 8) * 100),
+        totalControls: 8,
+        compliantControls: soc2TotalCompliant,
+        nonCompliantControls: soc2TotalNonCompliant,
+      },
+      {
+        id: 'proj-4',
+        name: 'ISO 27001 Challenge',
+        framework: 'ISO 27001',
+        complianceScore: Math.round((isoTotalCompliant / 12) * 100),
+        totalControls: 12,
+        compliantControls: isoTotalCompliant,
+        nonCompliantControls: isoTotalNonCompliant,
       },
     ];
 

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Confetti, type ConfettiRef } from '../components/ui/confetti';
+import { useNotifications } from '../contexts/NotificationContext';
 
 interface PolicyConfig {
     id: string;
@@ -86,6 +87,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ policyId, isOpen, onCl
     const [showError, setShowError] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const confettiRef = useRef<ConfettiRef>(null);
+    const { refreshData } = useNotifications();
 
     const policy = policyId ? POLICIES[policyId] : null;
 
@@ -142,15 +144,21 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ policyId, isOpen, onCl
 
         if (isCompliant) {
             setShowSuccess(true);
+            // Refresh data immediately to update duck and project cards
+            refreshData();
             setTimeout(() => {
+                setShowSuccess(false);
+                setIsSubmitting(false);
                 onClose();
-                window.location.reload();
             }, 2000);
         } else {
             setShowError(true);
+            // Refresh data to show the error state
+            refreshData();
             setTimeout(() => {
+                setShowError(false);
+                setIsSubmitting(false);
                 onClose();
-                window.location.reload();
             }, 2000);
         }
     };
