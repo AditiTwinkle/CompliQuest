@@ -20,7 +20,7 @@ This implementation plan prioritizes a working MVP for hackathon demonstration o
   - _Requirements: 4.1, 4.2, 10.1_
 
 - [ ] 2. Implement simple web scraping functionality
-  - [-] 2.1 Create basic DORA content scraper
+  - [x] 2.1 Create basic DORA content scraper
     - Use Puppeteer or Cheerio for simple HTML parsing
     - Target specific DORA documentation URLs with hardcoded selectors
     - Extract requirement text and basic metadata (title, section)
