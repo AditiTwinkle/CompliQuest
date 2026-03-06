@@ -32,26 +32,34 @@ export default function Dashboard() {
   }, []);
 
   const fetchData = async () => {
-    // Mock alerts - change this to test different duck states:
-    // - malnutritionOnly: hungry duck
-    // - shelterOnly: wet duck  
-    // - thirstOnly: thirsty duck
-    // - tiredOnly: tired duck
-    // - malnutritionAndShelter: hungry duck (priority)
-    // - allGood: happy duck
+    // Mock alerts - these simulate non-compliant questions
     const mockAlerts: Alert[] = [
       {
         id: 'alert-1',
         title: 'Malnutrition',
-        message: 'Missing food',
+        message: 'Missing food resources - Click "Resolve" to mark as compliant',
         severity: 'high',
         status: 'active',
       },
       {
         id: 'alert-2',
         title: 'Shelter',
-        message: 'Missing shelter',
+        message: 'Missing shelter resources - Click "Resolve" to mark as compliant',
         severity: 'high',
+        status: 'active',
+      },
+      {
+        id: 'alert-3',
+        title: 'Water Access',
+        message: 'Missing water resources - Click "Resolve" to mark as compliant',
+        severity: 'medium',
+        status: 'active',
+      },
+      {
+        id: 'alert-4',
+        title: 'Fatigue',
+        message: 'Workload too high - Click "Resolve" to mark as compliant',
+        severity: 'medium',
         status: 'active',
       },
     ];
@@ -82,11 +90,33 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  const urgentAlerts = alerts.filter((a) => a.severity === 'critical' || a.severity === 'high');
+  // Handle resolving an alert (marking question as compliant)
+  const handleResolveAlert = (alertId: string) => {
+    setAlerts(prevAlerts => 
+      prevAlerts.map(alert => 
+        alert.id === alertId 
+          ? { ...alert, status: 'resolved' }
+          : alert
+      )
+    );
+  };
+
+  // Get only active (non-resolved) alerts
+  const activeAlerts = alerts.filter(a => a.status === 'active');
+  const urgentAlerts = activeAlerts.filter((a) => a.severity === 'critical' || a.severity === 'high');
   
   // Determine duck states based on active alerts (supports multiple states)
-  const duckStates = determineAvatarStates(alerts);
+  const duckStates = determineAvatarStates(activeAlerts);
   const primaryState = duckStates[0] || 'happy';
+
+  // Get icon for alert type
+  const getAlertIcon = (title: string) => {
+    if (title.toLowerCase().includes('malnutrition') || title.toLowerCase().includes('food')) return '🍔';
+    if (title.toLowerCase().includes('shelter') || title.toLowerCase().includes('housing')) return '🏠';
+    if (title.toLowerCase().includes('water') || title.toLowerCase().includes('thirst')) return '💧';
+    if (title.toLowerCase().includes('fatigue') || title.toLowerCase().includes('tired')) return '😴';
+    return '⚠️';
+  };
 
   if (loading) {
     return (
@@ -129,24 +159,34 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-3">
-              {urgentAlerts.map((alert, idx) => (
+              {urgentAlerts.map((alert) => (
                 <div key={alert.id} className="duo-error-box flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl">{idx === 0 ? '🍔' : '🏠'}</span>
+                    <span className="text-3xl">{getAlertIcon(alert.title)}</span>
                     <div>
                       <p className="font-bold text-[var(--duo-text-primary)]">{alert.title}</p>
                       <p className="text-sm text-[var(--duo-text-secondary)]">{alert.message}</p>
                     </div>
                   </div>
                   <button
-                    onClick={() => navigate(`/projects/proj-1/questionnaire`)}
+                    onClick={() => handleResolveAlert(alert.id)}
                     className="duo-button-primary text-sm"
                   >
-                    Fix Now
+                    Resolve ✓
                   </button>
                 </div>
               ))}
             </div>
+
+            {/* Show resolved count */}
+            {alerts.filter(a => a.status === 'resolved').length > 0 && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-800 font-medium text-center">
+                  ✅ {alerts.filter(a => a.status === 'resolved').length} issue(s) resolved! 
+                  {activeAlerts.length === 0 && ' Dilly is happy now! 🎉'}
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="duo-card bounce-in">
@@ -160,6 +200,11 @@ export default function Dashboard() {
               <p className="text-[var(--duo-text-secondary)] font-medium">
                 😊 Dilly is happy! All compliance requirements are being met.
               </p>
+              {alerts.filter(a => a.status === 'resolved').length > 0 && (
+                <p className="text-sm text-green-600 font-medium mt-2">
+                  You resolved {alerts.filter(a => a.status === 'resolved').length} issue(s)!
+                </p>
+              )}
             </div>
           </div>
         )}
