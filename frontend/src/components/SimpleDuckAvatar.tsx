@@ -193,6 +193,73 @@ function SimpleDuckAvatar({ state = 'happy', size = 'small' }: SimpleDuckAvatarP
           animation: simpleHungryHop-${uniqueId} 1.5s ease-in-out infinite;
         }
 
+        .${uniqueId}.state-hungry .simple-chick-body {
+          animation: simpleStomachGrumble-${uniqueId} 1.5s ease-in-out infinite;
+        }
+
+        /* Rumble lines for hungry state */
+        .${uniqueId}.state-hungry .rumble-lines {
+          display: block;
+        }
+
+        .${uniqueId} .rumble-lines {
+          display: none;
+          position: absolute;
+          width: 140%;
+          height: 100%;
+          left: -20%;
+          top: 0;
+          pointer-events: none;
+        }
+
+        .${uniqueId} .rumble-line {
+          position: absolute;
+          width: 8px;
+          height: 2px;
+          background: #ff9800;
+          border-radius: 2px;
+          opacity: 0;
+          animation: rumblePulse-${uniqueId} 1.5s ease-in-out infinite;
+        }
+
+        .${uniqueId} .rumble-line:nth-child(1) { left: -3px; top: 40%; transform: rotate(-20deg); animation-delay: 0.5s; }
+        .${uniqueId} .rumble-line:nth-child(2) { left: -5px; top: 55%; transform: rotate(10deg); animation-delay: 0.6s; }
+        .${uniqueId} .rumble-line:nth-child(3) { right: -3px; top: 40%; transform: rotate(20deg); animation-delay: 0.55s; }
+        .${uniqueId} .rumble-line:nth-child(4) { right: -5px; top: 55%; transform: rotate(-10deg); animation-delay: 0.65s; }
+
+        @keyframes rumblePulse-${uniqueId} {
+          0%, 40%, 80%, 100% { opacity: 0; transform: translateX(0) scaleX(1); }
+          50% { opacity: 0.8; transform: translateX(-2px) scaleX(1.3); }
+          60% { opacity: 0.5; transform: translateX(1px) scaleX(0.8); }
+          70% { opacity: 0.3; transform: translateX(-1px) scaleX(1); }
+        }
+
+        /* Food particles for hungry state */
+        .${uniqueId}.state-hungry .food-particles {
+          display: block;
+        }
+
+        .${uniqueId} .food-particles {
+          display: none;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        .${uniqueId} .food-particle {
+          position: absolute;
+          font-size: 12px;
+          opacity: 0;
+          animation: foodFloat-${uniqueId} 2.5s ease-out infinite;
+        }
+
+        @keyframes foodFloat-${uniqueId} {
+          0% { opacity: 0.9; transform: translateY(0) scale(1) rotate(0deg); }
+          100% { opacity: 0; transform: translateY(-30px) scale(0.6) rotate(15deg); }
+        }
+
         .${uniqueId}.state-thirsty {
           animation: simpleSadSway-${uniqueId} 3s ease-in-out infinite;
         }
@@ -216,6 +283,15 @@ function SimpleDuckAvatar({ state = 'happy', size = 'small' }: SimpleDuckAvatarP
           40% { transform: translateY(0) rotate(0deg); }
         }
 
+        @keyframes simpleStomachGrumble-${uniqueId} {
+          0%, 45%, 80%, 100% { transform: scale(1); border-radius: 50%; }
+          50% { transform: scale(1.06, 0.96); border-radius: 48%; }
+          55% { transform: scale(0.97, 1.04); border-radius: 50%; }
+          60% { transform: scale(1.04, 0.97); border-radius: 49%; }
+          65% { transform: scale(0.98, 1.03); border-radius: 50%; }
+          70% { transform: scale(1.02, 0.99); border-radius: 50%; }
+        }
+
         @keyframes simpleSadSway-${uniqueId} {
           0%, 100% { transform: translateY(0) rotate(0deg); }
           50% { transform: translateY(2px) rotate(-2deg); }
@@ -237,6 +313,13 @@ function SimpleDuckAvatar({ state = 'happy', size = 'small' }: SimpleDuckAvatarP
         className={`${uniqueId} state-${state}`}
         style={sizeStyles}
       >
+        {/* Food particles for hungry state */}
+        <div className="food-particles">
+          <div className="food-particle" style={{ left: '20%', top: '30%', animationDelay: '0s' }}>🍗</div>
+          <div className="food-particle" style={{ left: '70%', top: '35%', animationDelay: '0.8s' }}>🍔</div>
+          <div className="food-particle" style={{ left: '45%', top: '25%', animationDelay: '1.6s' }}>🍕</div>
+        </div>
+
         <div className="simple-chick-body">
           <div className="simple-chick-head">
             <div className="simple-chick-eyes">
@@ -251,6 +334,14 @@ function SimpleDuckAvatar({ state = 'happy', size = 'small' }: SimpleDuckAvatarP
           
           <div className="simple-chick-wing simple-chick-wing-left"></div>
           <div className="simple-chick-wing simple-chick-wing-right"></div>
+          
+          {/* Rumble lines for hungry state */}
+          <div className="rumble-lines">
+            <div className="rumble-line"></div>
+            <div className="rumble-line"></div>
+            <div className="rumble-line"></div>
+            <div className="rumble-line"></div>
+          </div>
           
           <div className="simple-chick-feet">
             <div className="simple-chick-foot"></div>

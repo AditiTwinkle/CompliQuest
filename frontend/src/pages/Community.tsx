@@ -70,15 +70,16 @@ function Community() {
     };
 
     // Define state distribution for each division to ensure variety
+    // Total: 15 + 12 + 10 + 10 + 8 = 55 ducks
     const stateDistribution = {
-      'Capital Markets': { happy: 9, tired: 2, thirsty: 1, wet: 2, hungry: 1 }, // 15 total
-      'Data & Analytics': { happy: 7, tired: 1, thirsty: 2, wet: 1, hungry: 1 }, // 12 total
+      'Capital Markets': { happy: 9, tired: 2, thirsty: 1, wet: 2, hungry: 1 }, // 15 total (includes user)
+      'Data & Analytics': { happy: 7, tired: 2, thirsty: 1, wet: 1, hungry: 1 }, // 12 total
       'Post Trade': { happy: 6, tired: 1, thirsty: 1, wet: 1, hungry: 1 }, // 10 total
-      'Technology': { happy: 5, tired: 1, thirsty: 1, wet: 1, hungry: 2 }, // 10 total
-      'LSEG Hub': { happy: 5, tired: 0, thirsty: 0, wet: 0, hungry: 2 }, // 8 total (user is 1 happy)
+      'Technology': { happy: 6, tired: 1, thirsty: 1, wet: 1, hungry: 1 }, // 10 total
+      'LSEG Hub': { happy: 5, tired: 1, thirsty: 1, wet: 0, hungry: 1 }, // 8 total
     };
 
-    // Add user duck first in Capital Markets
+    // Add user duck first in Capital Markets (counts as 1 happy)
     const userDivision = divisionsWithSize[0];
     duckList.push({ 
       id: id++, 
@@ -93,17 +94,20 @@ function Community() {
     divisionsWithSize.forEach((division) => {
       const distribution = stateDistribution[division.name as keyof typeof stateDistribution];
       
-      // Skip user duck count for Capital Markets (already added)
-      const startCount = division.name === 'Capital Markets' ? 1 : 0;
-      
       // Create array of states for this division
-      const divisionStates: AvatarState[] = [
-        ...Array(distribution.happy - (division.name === 'Capital Markets' ? 1 : 0)).fill('happy'),
-        ...Array(distribution.tired).fill('tired'),
-        ...Array(distribution.thirsty).fill('thirsty'),
-        ...Array(distribution.wet).fill('wet'),
-        ...Array(distribution.hungry).fill('hungry'),
-      ];
+      const divisionStates: AvatarState[] = [];
+      
+      // For Capital Markets, subtract 1 from happy count since user is already added
+      if (division.name === 'Capital Markets') {
+        divisionStates.push(...Array(distribution.happy - 1).fill('happy'));
+      } else {
+        divisionStates.push(...Array(distribution.happy).fill('happy'));
+      }
+      
+      divisionStates.push(...Array(distribution.tired).fill('tired'));
+      divisionStates.push(...Array(distribution.thirsty).fill('thirsty'));
+      divisionStates.push(...Array(distribution.wet).fill('wet'));
+      divisionStates.push(...Array(distribution.hungry).fill('hungry'));
       
       // Shuffle states for random distribution within division
       const shuffledStates = divisionStates.sort(() => Math.random() - 0.5);
@@ -178,11 +182,15 @@ function Community() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">LSEG Community Floor Map</h1>
-          <p className="text-gray-600">
+          <h1 className="text-6xl font-bold mb-2">
+            <span className="bg-gradient-to-r from-[var(--duo-primary)] via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              LSEG Community Floor Map
+            </span>
+          </h1>
+          <p className="text-[var(--duo-text-secondary)] text-lg font-medium">
             Office floor with team member status - Total: {totalDucks} team members
             {(selectedState !== 'all' || selectedDivision !== 'all') && (
-              <span className="ml-2 text-blue-600 font-semibold">
+              <span className="ml-2 text-[var(--duo-primary)] font-bold">
                 (Showing {filteredDucks.length} 
                 {selectedState !== 'all' && ` ${selectedState}`}
                 {selectedDivision !== 'all' && ` in ${selectedDivision}`}
@@ -336,13 +344,13 @@ function Community() {
                 key={duck.id}
                 className={`absolute transition-all duration-300 cursor-pointer group ${
                   duck.isUser 
-                    ? 'z-20 scale-[2.5] hover:scale-[2.7]' 
-                    : 'hover:scale-125 hover:z-30'
+                    ? 'z-20 scale-[2.5] hover:scale-[2.7] opacity-100' 
+                    : 'hover:scale-125 hover:z-30 opacity-50 hover:opacity-80'
                 } ${
                   (selectedState !== 'all' && duck.state !== selectedState) || 
                   (selectedDivision !== 'all' && duck.division !== selectedDivision)
-                    ? 'opacity-30' 
-                    : 'opacity-100'
+                    ? 'opacity-20' 
+                    : ''
                 }`}
                 style={{
                   left: `${duck.x}%`,
@@ -352,18 +360,24 @@ function Community() {
               >
                 {duck.isUser && (
                   <>
-                    {/* User indicator ring - double ring effect */}
-                    <div className="absolute -inset-4 rounded-full border-4 border-blue-500 animate-pulse bg-blue-100 bg-opacity-30"></div>
-                    <div className="absolute -inset-5 rounded-full border-2 border-blue-300 opacity-50"></div>
+                    {/* Animated glow ring - triple ring effect */}
+                    <div className="absolute -inset-6 rounded-full border-4 border-yellow-400 animate-ping bg-yellow-100 bg-opacity-40"></div>
+                    <div className="absolute -inset-5 rounded-full border-4 border-blue-500 animate-pulse bg-blue-100 bg-opacity-50 shadow-2xl"></div>
+                    <div className="absolute -inset-6 rounded-full border-2 border-purple-400 opacity-60"></div>
                     
-                    {/* User label with gradient */}
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-base px-4 py-2 rounded-full font-bold whitespace-nowrap shadow-xl border-2 border-white">
-                      � {duck.name}
+                    {/* User label with gradient and crown */}
+                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-400 via-blue-500 to-purple-500 text-white text-base px-5 py-2.5 rounded-full font-bold whitespace-nowrap shadow-2xl border-3 border-white animate-pulse">
+                      👑 {duck.name} (YOU)
                     </div>
                     
-                    {/* Sparkle effects */}
-                    <div className="absolute -top-2 -left-2 text-yellow-400 text-xl animate-pulse">✨</div>
-                    <div className="absolute -top-2 -right-2 text-yellow-400 text-xl animate-pulse" style={{ animationDelay: '0.5s' }}>✨</div>
+                    {/* Enhanced sparkle effects with animation */}
+                    <div className="absolute -top-3 -left-3 text-yellow-400 text-2xl animate-bounce">✨</div>
+                    <div className="absolute -top-3 -right-3 text-yellow-400 text-2xl animate-bounce" style={{ animationDelay: '0.3s' }}>✨</div>
+                    <div className="absolute -bottom-2 -left-3 text-blue-400 text-xl animate-bounce" style={{ animationDelay: '0.6s' }}>⭐</div>
+                    <div className="absolute -bottom-2 -right-3 text-purple-400 text-xl animate-bounce" style={{ animationDelay: '0.9s' }}>⭐</div>
+                    
+                    {/* Spotlight effect */}
+                    <div className="absolute -inset-8 rounded-full bg-gradient-radial from-yellow-200 via-transparent to-transparent opacity-30 pointer-events-none"></div>
                   </>
                 )}
                 
