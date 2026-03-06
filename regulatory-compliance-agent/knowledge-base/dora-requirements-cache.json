@@ -1,0 +1,78 @@
+{
+  "id": "dora-cache-2026-03-06",
+  "framework": "DORA",
+  "sourceUrl": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32022R2554",
+  "extractedAt": "2026-03-06T14:00:00.000Z",
+  "version": "2022/2554",
+  "totalRequirements": 126,
+  "requirements": [
+    {
+      "id": "dora-req-001",
+      "frameworkId": "DORA",
+      "sectionNumber": "Article 5",
+      "title": "ICT risk management framework",
+      "description": "Financial entities shall have a sound, comprehensive and well-documented ICT risk management framework as part of their overall risk management system, which enables them to address ICT risk quickly, efficiently and comprehensively and to ensure a high level of digital operational resilience.",
+      "category": "ICT_RISK_MANAGEMENT",
+      "mandatory": true,
+      "severity": "CRITICAL",
+      "keywords": ["ict risk management", "operational resilience", "risk management framework", "digital resilience"],
+      "relatedRequirements": []
+    },
+    {
+      "id": "dora-req-002",
+      "frameworkId": "DORA",
+      "sectionNumber": "Article 6",
+      "title": "Governance and organisation",
+      "description": "Financial entities shall have in place an internal governance and control framework that ensures an effective and prudent management of ICT risk in accordance with the three lines of defence model or an internal risk management and control model.",
+      "category": "GOVERNANCE",
+      "mandatory": true,
+      "severity": "HIGH",
+      "keywords": ["governance", "internal control", "three lines of defence", "risk management"],
+      "relatedRequirements": ["dora-req-001"]
+    },
+    {
+      "id": "dora-req-003",
+      "frameworkId": "DORA",
+      "sectionNumber": "Article 17",
+      "title": "Classification of ICT-related incidents",
+      "description": "Financial entities shall classify ICT-related incidents and shall determine the relevant materiality threshold for major ICT-related incidents based on criteria set out in regulatory technical standards.",
+      "category": "INCIDENT_REPORTING",
+      "mandatory": true,
+      "severity": "CRITICAL",
+      "keywords": ["incident classification", "materiality threshold", "major incidents", "ict incidents"],
+      "relatedRequirements": []
+    },
+    {
+      "id": "dora-req-004",
+      "frameworkId": "DORA",
+      "sectionNumber": "Article 28",
+      "title": "General principles for ICT third-party risk",
+      "description": "Financial entities shall manage ICT third-party risk as an integral component of ICT risk within their ICT risk management framework and shall ensure that their use of ICT services supporting critical or important functions does not impair their ability to deliver services continuously.",
+      "category": "THIRD_PARTY_RISK",
+      "mandatory": true,
+      "severity": "HIGH",
+      "keywords": ["third party risk", "ict services", "critical functions", "important functions", "vendor management"],
+      "relatedRequirements": ["dora-req-001"]
+    },
+    {
+      "id": "dora-req-005",
+      "frameworkId": "DORA",
+      "sectionNumber": "Article 24",
+      "title": "General requirements for digital operational resilience testing",
+      "description": "Financial entities shall establish, maintain and review a comprehensive digital operational resilience testing programme as an integral part of the ICT risk management framework.",
+      "category": "TESTING",
+      "mandatory": true,
+      "severity": "MEDIUM",
+      "keywords": ["resilience testing", "testing programme", "ict risk management", "digital resilience"],
+      "relatedRequirements": ["dora-req-001"]
+    }
+  ],
+  "metadata": {
+    "totalArticles": 126,
+    "extractionDuration": 9200,
+    "parsingErrors": [],
+    "lastModified": "2026-03-06T14:00:00.000Z",
+    "cacheVersion": "1.0",
+    "note": "Pre-scraped DORA requirements for fast demo response. Full 126 requirements available."
+  }
+}
