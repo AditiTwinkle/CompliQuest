@@ -5,6 +5,7 @@ import GradientText from '../components/GradientText';
 import PolicyModal from '../components/PolicyModal';
 import { determineAvatarStates } from '../utils/avatarStateMapper';
 import { useNotifications } from '../contexts/NotificationContext';
+import { InteractiveGridPattern } from '@/registry/magicui/interactive-grid-pattern';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -60,8 +61,14 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen p-8 fade-in">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <div className="relative min-h-screen p-8 fade-in overflow-hidden">
+      <InteractiveGridPattern
+        width={20}
+        height={20}
+        squares={[200, 200]}
+        squaresClassName="fill-gray-200/10"
+      />
+      <div className="relative z-10 max-w-5xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center">
           <h1 className="text-6xl font-bold mb-4">
@@ -72,47 +79,55 @@ export default function Dashboard() {
 
         {/* Alert Section */}
         {urgentAlerts.length > 0 ? (
-          <div className="duo-card bounce-in">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-[var(--duo-text-primary)] mb-4">
-                🚨 Your LSEGling needs help! ({urgentAlerts.length} {urgentAlerts.length === 1 ? 'issue' : 'issues'})
-              </h2>
-              <div className="flex justify-center mb-6">
-                <LSEGlingAvatar
-                  states={duckStates}
-                  size="large"
-                  speechBubble={duckStates.length === 1 ? getSpeechBubbleMessage() : undefined}
-                />
+          <>
+            <div className="duo-card bounce-in">
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <LSEGlingAvatar
+                    states={duckStates}
+                    size="large"
+                    speechBubble={duckStates.length === 1 ? getSpeechBubbleMessage() : undefined}
+                  />
+                </div>
+                <h2 className="text-2xl font-bold text-[var(--duo-text-primary)]">
+                  Your LSEGling needs help! ({urgentAlerts.length} {urgentAlerts.length === 1 ? 'issue' : 'issues'})
+                </h2>
               </div>
             </div>
 
-            <div className="space-y-3">
-              {urgentAlerts.map((alert) => {
-                const policyNumber = alert.id.split('-')[1];
-                const icons = ['🍔', '🏠', '😴', '💧'];
-                const iconIndex = parseInt(policyNumber) - 1;
+            {/* Policies Section */}
+            <div className="bg-white rounded-2xl border-2 border-[var(--duo-border)] p-6 space-y-4">
+              <h3 className="text-xl font-bold text-[var(--duo-text-primary)]">
+                CompliQuest found {urgentAlerts.length} gaps unaddressed for the new regulation
+              </h3>
+              <div className="space-y-3">
+                {urgentAlerts.map((alert) => {
+                  const policyNumber = alert.id.split('-')[1];
+                  const icons = ['🍔', '🏠', '😴', '💧'];
+                  const iconIndex = parseInt(policyNumber) - 1;
 
-                return (
-                  <div key={alert.id} className="duo-error-box flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-3xl">{icons[iconIndex] || '⚠️'}</span>
-                      <div>
-                        <p className="font-bold text-[var(--duo-text-primary)]">Policy {policyNumber}: {alert.title}</p>
-                        <p className="text-sm text-[var(--duo-text-secondary)]">{alert.message}</p>
+                  return (
+                    <div key={alert.id} className="duo-error-box flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl">{icons[iconIndex] || '⚠️'}</span>
+                        <div>
+                          <p className="font-bold text-[var(--duo-text-primary)]">Policy {policyNumber}: {alert.title}</p>
+                          <p className="text-sm text-[var(--duo-text-secondary)]">{alert.message}</p>
+                        </div>
                       </div>
+                      <button
+                        onClick={() => openPolicyModal(policyNumber)}
+                        className="duo-button-primary text-sm"
+                        style={{ textDecoration: 'none' }}
+                      >
+                        Fix Now
+                      </button>
                     </div>
-                    <button
-                      onClick={() => openPolicyModal(policyNumber)}
-                      className="duo-button-primary text-sm"
-                      style={{ textDecoration: 'none' }}
-                    >
-                      Fix Now
-                    </button>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          </>
         ) : (
           <div className="duo-card bounce-in">
             <div className="text-center">
