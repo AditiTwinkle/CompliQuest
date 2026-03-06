@@ -93,17 +93,21 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       severity: mapDifficultyToSeverity(q.difficulty),
     }));
 
-    // Generate alerts from high-priority gaps
-    const alerts = analysisResult.gaps
-      .filter(g => g.severity === 'HIGH' || g.severity === 'CRITICAL')
-      .slice(0, 4) // Match number of policies
-      .map((gap, index) => ({
+
+    // Generate alerts from questions (one alert per policy)
+    const alerts = questions.map((question, index) => {
+      const relatedGap = analysisResult.gaps
+        .filter(g => g.severity === 'HIGH' || g.severity === 'CRITICAL')
+        [index];
+      
+      return {
         id: `policy-${index + 1}`,
-        title: questions[index]?.category || 'Compliance Gap',
-        message: gap.description,
-        severity: gap.severity.toLowerCase() as 'critical' | 'high' | 'medium' | 'low',
+        title: question.category,
+        message: relatedGap?.description || `Compliance gap identified for ${question.category}`,
+        severity: (relatedGap?.severity.toLowerCase() || 'high') as 'critical' | 'high' | 'medium' | 'low',
         status: 'open',
-      }));
+      };
+    });
 
     // Return CompliQuest MCP-compatible format
     const response = {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Breadcrumb from '../components/Breadcrumb';
+import { useNotifications } from '../contexts/NotificationContext';
 
 interface PolicyConfig {
     id: string;
@@ -13,7 +14,8 @@ interface PolicyConfig {
     successMessage: string;
 }
 
-const POLICIES: Record<string, PolicyConfig> = {
+// Fallback policies if agent is not available
+const FALLBACK_POLICIES: Record<string, PolicyConfig> = {
     '1': {
         id: '1',
         title: 'Malnutrition',
@@ -79,12 +81,18 @@ const POLICIES: Record<string, PolicyConfig> = {
 export const Policy: React.FC = () => {
     const { policyId } = useParams<{ policyId: string }>();
     const navigate = useNavigate();
+    const { policies, refreshData } = useNotifications();
 
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const policy = policyId ? POLICIES[policyId] : null;
+    // Use agent policies if available, otherwise fallback
+    const POLICIES_MAP = policies.length > 0 
+        ? Object.fromEntries(policies.map(p => [p.id, p]))
+        : FALLBACK_POLICIES;
+
+    const policy = policyId ? POLICIES_MAP[policyId] : null;
 
     const handleAnswerClick = (option: string) => {
         if (isSubmitting || !policy) return;
@@ -101,12 +109,14 @@ export const Policy: React.FC = () => {
             // Show success and redirect to dashboard
             setShowSuccess(true);
             setTimeout(() => {
+                refreshData(); // Refresh data from agent
                 navigate('/');
             }, 2000);
         } else {
             // Show error and redirect back to dashboard (policy will still show)
             setShowError(true);
             setTimeout(() => {
+                refreshData(); // Refresh data from agent
                 navigate('/');
             }, 2000);
         }

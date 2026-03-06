@@ -14,6 +14,7 @@ import evidenceRoutes from './routes/evidence';
 import notificationRoutes from './routes/notifications';
 import questionnaireRoutes from './routes/questionnaire';
 import agentRoutes from './routes/agent';
+import complianceAgentRoutes from './routes/complianceAgent';
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use('/evidence', evidenceRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/questionnaire', questionnaireRoutes);
 app.use('/agent', agentRoutes);
+app.use('/compliance-agent', complianceAgentRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
