@@ -9,41 +9,41 @@ interface QuestionDisplayProps {
 export const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ control, isLoading = false }) => {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6 animate-pulse">
-        <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-        <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+      <div className="duo-card">
+        <div className="h-6 bg-[var(--duo-surface)] rounded-xl w-3/4 mb-4"></div>
+        <div className="h-4 bg-[var(--duo-surface)] rounded-xl w-full mb-2"></div>
+        <div className="h-4 bg-[var(--duo-surface)] rounded-xl w-5/6"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="duo-card">
       <div className="mb-4">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">{control.title}</h2>
-        <p className="text-sm text-gray-500">
-          Category: <span className="font-semibold">{control.category}</span>
-        </p>
+        <h2 className="text-xl font-bold text-[var(--duo-text-primary)] mb-2">{control.title}</h2>
+        <div className="duo-badge-blue inline-block">
+          <span>📋</span>
+          <span>{control.category}</span>
+        </div>
       </div>
 
       <div className="mb-6">
-        <p className="text-gray-700 leading-relaxed">{control.description}</p>
+        <p className="text-[var(--duo-text-primary)] leading-relaxed font-medium">{control.description}</p>
       </div>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
-            className={`px-3 py-1 rounded-full text-sm font-semibold ${
-              control.severity === 'critical'
-                ? 'bg-red-100 text-red-800'
+            className={`duo-badge font-bold ${control.severity === 'critical'
+                ? 'bg-red-500 text-white'
                 : control.severity === 'high'
-                ? 'bg-orange-100 text-orange-800'
-                : control.severity === 'medium'
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-blue-100 text-blue-800'
-            }`}
+                  ? 'bg-orange-500 text-white'
+                  : control.severity === 'medium'
+                    ? 'bg-[var(--duo-yellow)] text-[var(--duo-text-primary)]'
+                    : 'bg-[var(--duo-secondary)] text-white'
+              }`}
           >
-            {control.severity.charAt(0).toUpperCase() + control.severity.slice(1)} Severity
+            {control.severity.charAt(0).toUpperCase() + control.severity.slice(1)} Priority
           </span>
         </div>
       </div>

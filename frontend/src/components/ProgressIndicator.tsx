@@ -20,39 +20,41 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="mb-4">
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg font-semibold text-gray-900">Progress</h3>
-          <span className="text-2xl font-bold text-blue-600">{percentage}%</span>
+    <div className="duo-card">
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-lg font-bold text-[var(--duo-text-primary)]">Progress</h3>
+          <span className="text-2xl font-bold text-[var(--duo-primary)]">
+            {percentage}%
+          </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-3">
+        <div className="duo-progress-bar">
           <div
-            className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+            className="duo-progress-fill"
             style={{ width: `${percentage}%` }}
-          ></div>
+          />
         </div>
-        <p className="text-sm text-gray-600 mt-2">
+        <p className="text-sm text-[var(--duo-text-secondary)] mt-3 font-medium">
           {current} of {total} controls completed
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-green-50 rounded-lg p-4">
-          <p className="text-xs text-gray-600 font-semibold">Compliant</p>
-          <p className="text-2xl font-bold text-green-600">{compliant}</p>
+        <div className="duo-success-box text-center">
+          <p className="text-xs text-[var(--duo-text-secondary)] font-bold mb-1">Compliant</p>
+          <p className="text-2xl font-bold text-[var(--duo-primary)]">{compliant}</p>
         </div>
-        <div className="bg-red-50 rounded-lg p-4">
-          <p className="text-xs text-gray-600 font-semibold">Non-Compliant</p>
+        <div className="duo-error-box text-center">
+          <p className="text-xs text-[var(--duo-text-secondary)] font-bold mb-1">Non-Compliant</p>
           <p className="text-2xl font-bold text-red-600">{nonCompliant}</p>
         </div>
-        <div className="bg-yellow-50 rounded-lg p-4">
-          <p className="text-xs text-gray-600 font-semibold">In Progress</p>
-          <p className="text-2xl font-bold text-yellow-600">{inProgress}</p>
+        <div className="bg-[var(--duo-yellow)] border-2 border-orange-400 rounded-xl p-4 text-center">
+          <p className="text-xs text-[var(--duo-text-primary)] font-bold mb-1">In Progress</p>
+          <p className="text-2xl font-bold text-orange-600">{inProgress}</p>
         </div>
-        <div className="bg-gray-50 rounded-lg p-4">
-          <p className="text-xs text-gray-600 font-semibold">Not Started</p>
-          <p className="text-2xl font-bold text-gray-600">{notStarted}</p>
+        <div className="bg-[var(--duo-surface)] border-2 border-[var(--duo-border)] rounded-xl p-4 text-center">
+          <p className="text-xs text-[var(--duo-text-secondary)] font-bold mb-1">Not Started</p>
+          <p className="text-2xl font-bold text-[var(--duo-text-secondary)]">{notStarted}</p>
         </div>
       </div>
     </div>

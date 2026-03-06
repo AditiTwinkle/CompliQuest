@@ -54,129 +54,140 @@ export default function Projects() {
     }
   };
 
-  if (loading) return <div className="p-6">Loading challenges...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="duo-card">
+          <p className="text-[var(--duo-text-secondary)] text-lg font-bold">Loading challenges...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+    <div className="min-h-screen p-8 fade-in">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-start mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900">🎮 Compliance Challenges</h1>
-            <p className="text-lg text-gray-600 mt-2">Help LSEGling complete these quests to protect your community!</p>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-[var(--duo-text-primary)] mb-2">
+            🎯 Compliance Challenges
+          </h1>
+          <p className="text-lg text-[var(--duo-text-secondary)] font-medium">Choose your next adventure!</p>
+        </div>
+
+        {error && (
+          <div className="duo-error-box mb-6 text-center">
+            <p className="font-bold text-red-600">{error}</p>
           </div>
+        )}
+
+        {/* Create Form Toggle */}
+        <div className="text-center mb-8">
           <button
             onClick={() => setShowCreateForm(!showCreateForm)}
-            className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition font-semibold"
+            className={showCreateForm ? 'duo-button-outline' : 'duo-button-secondary'}
           >
             {showCreateForm ? '✕ Cancel' : '➕ New Challenge'}
           </button>
         </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4 font-semibold">
-            {error}
-          </div>
-        )}
-
         {showCreateForm && (
-          <form onSubmit={handleCreateProject} className="bg-white rounded-lg shadow-lg p-6 mb-8 space-y-4 border-2 border-indigo-200">
-            <h2 className="text-xl font-bold text-gray-900">Create a New Challenge</h2>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Challenge Name</label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., AWS Security Compliance"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
+          <form onSubmit={handleCreateProject} className="duo-card mb-8 max-w-md mx-auto">
+            <h2 className="text-xl font-bold text-[var(--duo-text-primary)] mb-6 text-center">Create New Challenge</h2>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Compliance Framework</label>
-              <select
-                value={formData.frameworkId}
-                onChange={(e) => setFormData({ ...formData, frameworkId: e.target.value })}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">Select a framework</option>
-                <option value="gdpr">🌍 GDPR</option>
-                <option value="hipaa">🏥 HIPAA</option>
-                <option value="pci-dss">💳 PCI-DSS</option>
-                <option value="nist">🔒 NIST</option>
-              </select>
-            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-[var(--duo-text-secondary)] mb-2">Challenge Name</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g., AWS Security Compliance"
+                  required
+                  className="w-full duo-input"
+                />
+              </div>
 
-            <button
-              type="submit"
-              className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition"
-            >
-              🚀 Start Challenge
-            </button>
+              <div>
+                <label className="block text-sm font-bold text-[var(--duo-text-secondary)] mb-2">Framework</label>
+                <select
+                  value={formData.frameworkId}
+                  onChange={(e) => setFormData({ ...formData, frameworkId: e.target.value })}
+                  required
+                  className="w-full duo-input"
+                >
+                  <option value="">Select framework</option>
+                  <option value="gdpr">🌍 GDPR</option>
+                  <option value="hipaa">🏥 HIPAA</option>
+                  <option value="pci-dss">💳 PCI-DSS</option>
+                  <option value="nist">🔒 NIST</option>
+                </select>
+              </div>
+
+              <button type="submit" className="w-full duo-button-primary">
+                🚀 Create Challenge
+              </button>
+            </div>
           </form>
         )}
 
         {projects.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-lg shadow-lg">
-            <div className="mb-6">
-              <LSEGlingAvatar state="neutral" />
+          <div className="text-center py-20 duo-card max-w-md mx-auto">
+            <div className="mb-8">
+              <LSEGlingAvatar state="neutral" size="large" />
             </div>
-            <p className="text-xl text-gray-600 mb-6">No challenges yet. Help LSEGling by creating one!</p>
+            <h3 className="text-xl font-bold text-[var(--duo-text-primary)] mb-4">No challenges yet!</h3>
+            <p className="text-[var(--duo-text-secondary)] mb-6 font-medium">Create your first challenge to get started.</p>
             <button
               onClick={() => setShowCreateForm(true)}
-              className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition font-bold text-lg"
+              className="duo-button-primary"
             >
-              🎮 Create Your First Challenge
+              🎮 Start Your Journey
             </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((project) => (
-              <div
-                key={project.id}
-                className="bg-white rounded-lg shadow-lg hover:shadow-xl transition p-6 border-l-4 border-indigo-500 hover:scale-105 transform"
-              >
-                <div className="flex justify-between items-start mb-4">
+              <div key={project.id} className="duo-card group cursor-pointer">
+                <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">{project.name}</h3>
-                    <p className="text-sm text-indigo-600 font-semibold mt-1">
-                      {project.frameworkId.toUpperCase()} Challenge
-                    </p>
+                    <h3 className="text-lg font-bold text-[var(--duo-text-primary)]">{project.name}</h3>
+                    <div className="duo-badge-blue text-xs mt-2">
+                      <span>📋</span>
+                      <span>{project.frameworkId.toUpperCase()}</span>
+                    </div>
                   </div>
-                  <span className="text-2xl">🎯</span>
+                  <span className="text-4xl group-hover:scale-110 transition-transform">🎯</span>
                 </div>
 
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-semibold text-gray-700">Progress</span>
-                    <span className="text-2xl font-bold text-indigo-600">{project.complianceScore}%</span>
+                <div className="mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-bold text-[var(--duo-text-secondary)]">Progress</span>
+                    <span className="text-2xl font-bold text-[var(--duo-primary)]">{project.complianceScore}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div className="duo-progress-bar">
                     <div
-                      className="bg-gradient-to-r from-indigo-500 to-indigo-600 h-3 rounded-full transition-all"
+                      className="duo-progress-fill"
                       style={{ width: `${project.complianceScore}%` }}
                     />
                   </div>
-                  <p className="text-xs text-gray-600">
-                    {project.compliantControls}/{project.totalControls} controls completed
+                  <p className="text-xs text-[var(--duo-text-secondary)] mt-2 font-medium">
+                    {project.compliantControls}/{project.totalControls} completed
                   </p>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="space-y-2">
                   <Link
                     to={`/projects/${project.id}/questionnaire`}
-                    className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition text-center font-bold text-sm"
+                    className="block w-full duo-button-primary text-center"
                   >
-                    🎮 Play Challenge
+                    🎮 Start Challenge
                   </Link>
                   <Link
                     to={`/projects/${project.id}`}
-                    className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition text-center font-bold text-sm"
+                    className="block w-full duo-button-outline text-center"
                   >
-                    📊 Details
+                    📊 View Details
                   </Link>
                 </div>
               </div>

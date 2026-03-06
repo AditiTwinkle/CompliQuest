@@ -21,19 +21,19 @@ export default function AchievementBadge({
 
   return (
     <div
-      className={`relative ${animate ? 'animate-bounce' : ''}`}
+      className={`relative ${animate ? 'animate-float' : ''}`}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
-      <div className="w-16 h-16 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center text-3xl shadow-lg hover:shadow-xl transition cursor-pointer">
+      <div className="w-20 h-20 liquid-gradient-warning rounded-full flex items-center justify-center text-4xl shadow-xl hover:shadow-2xl hover-lift transition-all duration-300 cursor-pointer animate-glow">
         {icon}
       </div>
 
       {showTooltip && (
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap z-10">
-          <p className="font-semibold">{title}</p>
-          <p className="text-xs text-gray-300">{description}</p>
-          <p className="text-xs text-gray-400 mt-1">Earned: {earnedDate}</p>
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 glass-strong px-4 py-3 rounded-2xl text-sm whitespace-nowrap z-10 shadow-2xl animate-slide-up">
+          <p className="font-bold text-gray-800">{title}</p>
+          <p className="text-xs text-gray-600 mt-1">{description}</p>
+          <p className="text-xs text-gray-500 mt-1">Earned: {earnedDate}</p>
         </div>
       )}
     </div>

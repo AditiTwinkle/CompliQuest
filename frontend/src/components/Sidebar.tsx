@@ -15,47 +15,55 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-indigo-900 text-white flex flex-col h-screen">
-      <div className="p-6 border-b border-indigo-800">
-        <h2 className="text-2xl font-bold">CompliQuest</h2>
-        <p className="text-indigo-300 text-sm mt-1">Compliance Made Easy</p>
+    <aside className="w-64 bg-white flex flex-col h-screen border-r-2 border-[var(--duo-border)]">
+      <div className="p-6">
+        <h2 className="text-2xl font-bold text-[var(--duo-primary)]">
+          CompliQuest
+        </h2>
+        <p className="text-[var(--duo-text-secondary)] text-sm mt-1 font-medium">Compliance Made Easy</p>
       </div>
 
-      <nav className="flex-1 mt-6 px-3 space-y-2">
+      <nav className="flex-1 mt-2 px-3 space-y-2">
         <Link
           to="/"
-          className={`block px-4 py-2 rounded-lg transition ${
-            isActive('/') ? 'bg-indigo-700 text-white' : 'text-indigo-100 hover:bg-indigo-800'
-          }`}
+          className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-bold ${isActive('/')
+              ? 'bg-[var(--duo-primary)] text-white shadow-lg'
+              : 'text-[var(--duo-text-secondary)] hover:bg-[var(--duo-surface)]'
+            }`}
         >
-          Dashboard
+          <span className="text-xl">📊</span>
+          <span>Dashboard</span>
         </Link>
         <Link
           to="/projects"
-          className={`block px-4 py-2 rounded-lg transition ${
-            isActive('/projects') ? 'bg-indigo-700 text-white' : 'text-indigo-100 hover:bg-indigo-800'
-          }`}
+          className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-bold ${isActive('/projects')
+              ? 'bg-[var(--duo-primary)] text-white shadow-lg'
+              : 'text-[var(--duo-text-secondary)] hover:bg-[var(--duo-surface)]'
+            }`}
         >
-          Projects
+          <span className="text-xl">🎯</span>
+          <span>Projects</span>
         </Link>
       </nav>
 
-      <div className="p-4 border-t border-indigo-800">
-        <div className="text-sm text-indigo-200 mb-4">
-          <p className="font-medium">{user?.name}</p>
-          <p className="text-indigo-300 text-xs">{user?.email}</p>
+      <div className="p-3 space-y-3">
+        <div className="bg-[var(--duo-surface)] rounded-xl p-3 border-2 border-[var(--duo-border)]">
+          <p className="font-bold text-[var(--duo-text-primary)] text-sm">{user?.name}</p>
+          <p className="text-[var(--duo-text-secondary)] text-xs mt-0.5">{user?.email}</p>
         </div>
         <Link
           to="/profile"
-          className="block px-4 py-2 rounded-lg text-indigo-100 hover:bg-indigo-800 transition text-sm mb-2"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[var(--duo-text-secondary)] hover:bg-[var(--duo-surface)] transition-all duration-200 text-sm font-bold"
         >
-          Profile
+          <span>👤</span>
+          <span>Profile</span>
         </Link>
         <button
           onClick={handleLogout}
-          className="w-full px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition text-sm font-medium"
+          className="w-full duo-button-outline text-sm flex items-center justify-center gap-2"
         >
-          Logout
+          <span>🚪</span>
+          <span>Logout</span>
         </button>
       </div>
     </aside>

@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import UserProfile from './pages/UserProfile'
 import Projects from './pages/Projects'
 import Questionnaire from './pages/Questionnaire'
+import Presentation from './pages/Presentation'
 
 const queryClient = new QueryClient()
 
@@ -25,6 +26,7 @@ function App() {
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/projects/:projectId/questionnaire" element={<Questionnaire />} />
+              <Route path="/presentation" element={<Presentation />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
