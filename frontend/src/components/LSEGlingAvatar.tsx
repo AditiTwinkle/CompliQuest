@@ -24,14 +24,23 @@ function LSEGlingAvatar({
   useEffect(() => {
     if (states && states.length > 0) {
       setCurrentStates(states);
+      console.log('Duck states updated:', states);
     } else {
       setCurrentStates([state]);
+      console.log('Duck state updated:', state);
     }
   }, [state, states]);
   
   // Check if specific states are active
   const isWet = currentStates.includes('wet');
   const isThirsty = currentStates.includes('thirsty');
+
+  // Log for debugging
+  useEffect(() => {
+    console.log('Current duck states:', currentStates);
+    console.log('Is wet:', isWet);
+    console.log('Background:', getBackgroundGradient());
+  }, [currentStates, isWet]);
 
   const getSizeClasses = () => {
     switch (size) {
@@ -262,6 +271,72 @@ function LSEGlingAvatar({
           filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
         }
 
+        /* Base animations - these can be combined */
+        @keyframes baseHop {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+
+        @keyframes baseShake {
+          0%, 100% { transform: translateX(0) rotate(0deg); }
+          25% { transform: translateX(-3px) rotate(-2deg); }
+          75% { transform: translateX(3px) rotate(2deg); }
+        }
+
+        @keyframes baseSway {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(3px) rotate(-1deg); }
+        }
+
+        /* Container animations - combine multiple states */
+        .avatar-container-happy .chick-container {
+          animation: happyBounce 0.6s ease-in-out infinite;
+        }
+
+        .avatar-container-hungry .chick-container {
+          animation: hungryHop 1.5s ease-in-out infinite;
+        }
+
+        .avatar-container-thirsty .chick-container {
+          animation: thirstySadSway 3s ease-in-out infinite;
+        }
+
+        .avatar-container-tired .chick-container {
+          animation: tiredSway 4s ease-in-out infinite;
+        }
+
+        .avatar-container-wet .chick-container {
+          animation: wetShake 0.4s ease-in-out infinite;
+        }
+
+        /* Combined states - hungry + wet */
+        .avatar-container-hungry.avatar-container-wet .chick-container {
+          animation: hungryHop 1.5s ease-in-out infinite, wetShake 0.4s ease-in-out infinite;
+        }
+
+        /* Combined states - hungry + thirsty */
+        .avatar-container-hungry.avatar-container-thirsty .chick-container {
+          animation: hungryHop 1.5s ease-in-out infinite, thirstySadSway 3s ease-in-out infinite;
+        }
+
+        /* Combined states - wet + thirsty */
+        .avatar-container-wet.avatar-container-thirsty .chick-container {
+          animation: wetShake 0.4s ease-in-out infinite, thirstySadSway 3s ease-in-out infinite;
+        }
+
+        /* Combined states - all distress states */
+        .avatar-container-hungry.avatar-container-wet.avatar-container-thirsty .chick-container,
+        .avatar-container-hungry.avatar-container-wet.avatar-container-tired .chick-container,
+        .avatar-container-hungry.avatar-container-thirsty.avatar-container-tired .chick-container,
+        .avatar-container-wet.avatar-container-thirsty.avatar-container-tired .chick-container {
+          animation: hungryHop 1.5s ease-in-out infinite, wetShake 0.4s ease-in-out infinite;
+        }
+
+        /* All 4 states */
+        .avatar-container-hungry.avatar-container-wet.avatar-container-thirsty.avatar-container-tired .chick-container {
+          animation: hungryHop 1.5s ease-in-out infinite, wetShake 0.4s ease-in-out infinite;
+        }
+
         /* Animations */
         @keyframes happyBounce {
           0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
@@ -406,7 +481,6 @@ function LSEGlingAvatar({
         }
 
         /* Happy state animations */
-        .avatar-container-happy .chick-container { animation: happyBounce 0.6s ease-in-out infinite; }
         .avatar-container-happy .chick-head { animation: happyHead 0.6s ease-in-out infinite; }
         .avatar-container-happy .chick-wing-left { animation: happyWingLeft 0.3s ease-in-out infinite; }
         .avatar-container-happy .chick-wing-right { animation: happyWingRight 0.3s ease-in-out infinite; }
@@ -414,14 +488,12 @@ function LSEGlingAvatar({
         .avatar-container-happy .chick-cheek { animation: happyCheeks 0.6s ease-in-out infinite; }
 
         /* Hungry state animations */
-        .avatar-container-hungry .chick-container { animation: hungryHop 1.5s ease-in-out infinite; }
         .avatar-container-hungry .chick-head { animation: hungryLookDown 2s ease-in-out infinite; }
         .avatar-container-hungry .chick-wing-left { animation: hungryWiggle 0.6s ease-in-out infinite; }
         .avatar-container-hungry .chick-wing-right { animation: hungryWiggleRight 0.6s ease-in-out infinite; }
         .avatar-container-hungry .chick-body { animation: stomachGrumble 1.5s ease-in-out infinite; }
 
         /* Thirsty state animations */
-        .avatar-container-thirsty .chick-container { animation: thirstySadSway 3s ease-in-out infinite; }
         .avatar-container-thirsty .chick-head { animation: thirstySadHead 3s ease-in-out infinite; }
         .avatar-container-thirsty .chick-eye { animation: sadEyes 3s ease-in-out infinite; }
         .avatar-container-thirsty .chick-wing-left { animation: sadDroop 3s ease-in-out infinite; }
@@ -429,14 +501,12 @@ function LSEGlingAvatar({
         .avatar-container-thirsty .chick-cheek { opacity: 0.3; }
 
         /* Tired state animations */
-        .avatar-container-tired .chick-container { animation: tiredSway 4s ease-in-out infinite; }
         .avatar-container-tired .chick-head { animation: tiredNod 4s ease-in-out infinite; }
         .avatar-container-tired .chick-eye { animation: sleepyEyes 4s ease-in-out infinite; }
         .avatar-container-tired .chick-wing-left { animation: tiredDroop 4s ease-in-out infinite; }
         .avatar-container-tired .chick-wing-right { animation: tiredDroop 4s ease-in-out infinite; }
 
         /* Wet state animations */
-        .avatar-container-wet .chick-container { animation: wetShake 0.4s ease-in-out infinite; }
         .avatar-container-wet .chick-head { animation: wetHead 0.4s ease-in-out infinite; }
         .avatar-container-wet .chick-wing-left { animation: wetFlapLeft 0.2s ease-in-out infinite; }
         .avatar-container-wet .chick-wing-right { animation: wetFlapRight 0.2s ease-in-out infinite; }
