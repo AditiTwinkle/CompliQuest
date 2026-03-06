@@ -64,54 +64,58 @@ export class DoraScraper {
 
   /**
    * Scrape DORA requirements from official EU documentation
+   * FOR DEMO: Uses cached knowledge base for instant response
    */
   async scrapeDORARequirements(): Promise<RegulatoryContent> {
-    logger.info('Starting DORA requirements scraping');
-
-    const scrapingConfig: ScrapingConfig = {
-      targetUrl: config.dora.baseUrl || DoraScraper.DORA_URLS.html,
-      framework: 'DORA',
-      selectors: {
-        articleSelector: DoraScraper.DORA_SELECTORS.articleSelector,
-        titleSelector: DoraScraper.DORA_SELECTORS.titleSelector,
-        contentSelector: DoraScraper.DORA_SELECTORS.contentSelector,
-        sectionSelector: DoraScraper.DORA_SELECTORS.sectionSelector,
-      },
-      rateLimit: config.scraping.rateLimitMs,
-    };
+    logger.info('Starting DORA requirements scraping (using cached knowledge base for fast demo)');
 
     try {
-      // Try primary URL first
-      const content = await this.webScraper.scrapeRegulatory(scrapingConfig);
-      
-      // Validate extraction
-      const validation = this.webScraper.validateExtraction(content);
-      
-      if (!validation.isValid) {
-        logger.warn('DORA extraction validation failed, trying fallback approach', {
-          errors: validation.errors
+      // Try to load from cache first for instant response
+      const cachedData = await this.loadFromCache();
+      if (cachedData) {
+        logger.info('Loaded DORA requirements from cache', {
+          requirementsCount: cachedData.requirements.length,
+          cacheVersion: cachedData.metadata?.cacheVersion || 'unknown'
         });
-        
-        // Try fallback extraction if primary fails
-        return await this.fallbackExtraction();
+        return cachedData;
       }
-
-      // Enhance DORA-specific requirements
-      const enhancedContent = this.enhanceDORARequirements(content);
-      
-      logger.info('DORA requirements scraping completed successfully', {
-        requirementsExtracted: enhancedContent.requirements.length,
-        sourceUrl: enhancedContent.sourceUrl
-      });
-
-      return enhancedContent;
-      
     } catch (error) {
-      logger.error('Primary DORA scraping failed, attempting fallback', {
+      logger.warn('Failed to load from cache, using mock data', {
         error: error instanceof Error ? error.message : 'Unknown error'
       });
+    }
+
+    // Fallback to mock data if cache fails
+    logger.info('Using mock DORA data as fallback');
+    return this.getMockDORAData();
+  }
+
+  /**
+   * Load DORA requirements from cached knowledge base
+   */
+  private async loadFromCache(): Promise<RegulatoryContent | null> {
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
       
-      return await this.fallbackExtraction();
+      const cachePath = path.join(__dirname, '../../knowledge-base/dora-requirements-cache.json');
+      const cacheData = await fs.readFile(cachePath, 'utf-8');
+      const parsed = JSON.parse(cacheData);
+      
+      // Convert to RegulatoryContent format
+      return {
+        id: parsed.id,
+        framework: parsed.framework,
+        sourceUrl: parsed.sourceUrl,
+        extractedAt: new Date(parsed.extractedAt),
+        requirements: parsed.requirements,
+        metadata: parsed.metadata
+      };
+    } catch (error) {
+      logger.warn('Cache file not found or invalid', {
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      return null;
     }
   }
 
