@@ -60,8 +60,6 @@ This implementation plan prioritizes a working MVP for hackathon demonstration o
 - [~] 4. Checkpoint - Basic scraping and analysis working
   - Ensure scraping extracts DORA requirements successfully
   - Verify gap analysis produces meaningful results
-  - Test with mock organizational data
-  - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 5. Integrate AWS Bedrock for intelligent processing
   - [~] 5.1 Set up basic Bedrock client configuration
