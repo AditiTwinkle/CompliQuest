@@ -79,64 +79,53 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       questionsCount: questions.length 
     });
 
-    // Step 5: Return complete analysis results
+    // Step 5: Transform to CompliQuest MCP format
+    // Convert questions to PolicyConfig format
+    const policies = questions.map((q, index) => ({
+      id: (index + 1).toString(),
+      title: q.category,
+      question: q.text,
+      answers: q.options,
+      correctAnswer: q.options[q.correctAnswer],
+      complianceProperty: `dora-policy-${index + 1}-compliant`,
+      icon: getCategoryIcon(q.category),
+      successMessage: getSuccessMessage(q.category),
+      severity: mapDifficultyToSeverity(q.difficulty),
+    }));
+
+    // Generate alerts from high-priority gaps
+    const alerts = analysisResult.gaps
+      .filter(g => g.severity === 'HIGH' || g.severity === 'CRITICAL')
+      .slice(0, 4) // Match number of policies
+      .map((gap, index) => ({
+        id: `policy-${index + 1}`,
+        title: questions[index]?.category || 'Compliance Gap',
+        message: gap.description,
+        severity: gap.severity.toLowerCase() as 'critical' | 'high' | 'medium' | 'low',
+        status: 'open',
+      }));
+
+    // Return CompliQuest MCP-compatible format
     const response = {
       success: true,
-      data: {
-        // CompliQuest-compatible questions (primary output)
-        questions,
-        
-        // Analysis metadata
-        metadata: {
-          organizationId,
-          organizationName: organizationId === 'org-demo-bank-001' ? 'Demo Financial Services Ltd' : 'Organization',
-          frameworkId,
-          frameworkName: 'Digital Operational Resilience Act (DORA)',
-          analysisDate: new Date().toISOString(),
-          
-          // Workflow summary
-          workflow: {
-            doraRequirementsScraped: requirements.length,
-            organizationalControlsAnalyzed: organizationalControls.length,
-            gapsIdentified: analysisResult.gaps.length,
-            questionsGenerated: questions.length,
-          },
-          
-          // Compliance summary
-          compliance: {
-            overallPercentage: analysisResult.compliancePercentage,
-            fullyCompliant: analysisResult.summary.fullyCompliant,
-            partiallyCompliant: analysisResult.summary.partiallyCompliant,
-            nonCompliant: analysisResult.summary.nonCompliant,
-            highPriorityGaps: analysisResult.gaps.filter(g => 
-              g.severity === 'HIGH' || g.severity === 'CRITICAL'
-            ).length,
-          },
-          
-          // Question metadata for CompliQuest
-          questionMetadata: {
-            totalQuestions: questions.length,
-            averageDifficulty: calculateAverageDifficulty(questions),
-            categories: [...new Set(questions.map(q => q.category))],
-            totalPoints: questions.reduce((sum, q) => sum + q.points, 0),
-          },
-        },
-        
-        // Optional: Include gap analysis details for debugging/transparency
-        gapAnalysis: {
-          gaps: analysisResult.gaps.map(gap => ({
-            id: gap.id,
-            requirementId: gap.requirementId,
-            severity: gap.severity,
-            gapType: gap.gapType,
-            description: gap.description,
-            businessImpact: gap.businessImpact,
-          })),
-          summary: analysisResult.summary,
+      policies,
+      alerts,
+      timestamp: new Date().toISOString(),
+      metadata: {
+        organizationId,
+        organizationName: organizationId === 'org-demo-bank-001' ? 'Demo Financial Services Ltd' : 'Organization',
+        frameworkId,
+        frameworkName: 'Digital Operational Resilience Act (DORA)',
+        compliance: {
+          overallPercentage: analysisResult.compliancePercentage,
+          totalGaps: analysisResult.gaps.length,
+          highPriorityGaps: analysisResult.gaps.filter(g => 
+            g.severity === 'HIGH' || g.severity === 'CRITICAL'
+          ).length,
         },
       },
-      message: `Complete compliance analysis completed successfully. Generated ${questions.length} CompliQuest questions from ${analysisResult.gaps.length} identified gaps (${analysisResult.compliancePercentage}% compliance).`,
-    } as ApiResponse<any>;
+      message: `Generated ${policies.length} compliance policies from ${analysisResult.gaps.length} identified gaps (${analysisResult.compliancePercentage}% compliance).`,
+    };
 
     logger.info('Complete compliance analysis workflow finished successfully', {
       organizationId,
@@ -180,6 +169,56 @@ function calculateAverageDifficulty(questions: any[]): string {
   if (averageScore <= 1.3) return 'easy';
   if (averageScore <= 2.3) return 'medium';
   return 'hard';
+}
+
+/**
+ * Helper function to get category icon
+ */
+function getCategoryIcon(category: string): string {
+  const iconMap: Record<string, string> = {
+    'Risk Management': '⚠️',
+    'Governance & Oversight': '👔',
+    'Incident Management': '🚨',
+    'Vendor Management': '🤝',
+    'Security Testing': '🔒',
+    'Business Continuity': '🔄',
+    'Operational Resilience': '💪',
+    'ICT Risk Management': '💻',
+    'DORA Fundamentals': '📚',
+    'DORA Scope': '🎯',
+    'Third-Party Risk': '🔗',
+    'Testing Requirements': '✅',
+  };
+  return iconMap[category] || '📋';
+}
+
+/**
+ * Helper function to get success message
+ */
+function getSuccessMessage(category: string): string {
+  const messageMap: Record<string, string> = {
+    'Risk Management': 'Your organization improved risk management!',
+    'Governance & Oversight': 'Your governance framework is stronger!',
+    'Incident Management': 'Your incident response is enhanced!',
+    'Vendor Management': 'Your vendor risk controls are improved!',
+    'Security Testing': 'Your security testing is more robust!',
+    'Business Continuity': 'Your business continuity is enhanced!',
+    'Operational Resilience': 'Your operational resilience is improved!',
+    'ICT Risk Management': 'Your ICT risk management is stronger!',
+  };
+  return messageMap[category] || 'Your compliance improved!';
+}
+
+/**
+ * Helper function to map difficulty to severity
+ */
+function mapDifficultyToSeverity(difficulty: string): 'critical' | 'high' | 'medium' | 'low' {
+  const severityMap: Record<string, 'critical' | 'high' | 'medium' | 'low'> = {
+    'hard': 'critical',
+    'medium': 'high',
+    'easy': 'medium',
+  };
+  return severityMap[difficulty] || 'medium';
 }
 
 export default router;

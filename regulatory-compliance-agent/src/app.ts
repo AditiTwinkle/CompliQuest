@@ -48,6 +48,7 @@ export const createApp = (): express.Application => {
   app.use('/api/organizational-checklist', organizationalChecklistRoutes);
   app.use('/api/gap-analysis', gapAnalysisRoutes);
   app.use('/api/questions', questionGenerationRoutes);
+  app.use('/api/analyze', analysisRoutes);
 
   // Catch 404 and forward to error handler
   app.use(notFoundHandler);
