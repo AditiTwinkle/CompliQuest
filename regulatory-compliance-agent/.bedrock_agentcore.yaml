@@ -1,0 +1,11 @@
+name: regulatory-compliance-agent
+description: Regulatory Compliance Agent for DORA compliance automation
+runtime: python3.12
+entrypoint: src/agent_main.py
+memory: 512
+timeout: 300
+environment:
+  NODE_ENV: production
+  LOG_LEVEL: info
+  BEDROCK_MODEL_ID: anthropic.claude-3-5-sonnet-20241022-v2:0
+  BEDROCK_REGION: us-east-1
