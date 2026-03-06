@@ -315,6 +315,11 @@ function LSEGlingAvatar({
           50% { transform: rotate(-25deg); }
         }
 
+        @keyframes hungryWiggleRight {
+          0%, 100% { transform: rotate(15deg); }
+          50% { transform: rotate(25deg); }
+        }
+
         @keyframes stomachGrumble {
           0%, 45%, 80%, 100% { transform: scale(1); border-radius: 50%; }
           50% { transform: scale(1.06, 0.96); border-radius: 48%; }
@@ -411,21 +416,24 @@ function LSEGlingAvatar({
         /* Hungry state animations */
         .avatar-container-hungry .chick-container { animation: hungryHop 1.5s ease-in-out infinite; }
         .avatar-container-hungry .chick-head { animation: hungryLookDown 2s ease-in-out infinite; }
-        .avatar-container-hungry .chick-wing { animation: hungryWiggle 0.6s ease-in-out infinite; }
+        .avatar-container-hungry .chick-wing-left { animation: hungryWiggle 0.6s ease-in-out infinite; }
+        .avatar-container-hungry .chick-wing-right { animation: hungryWiggleRight 0.6s ease-in-out infinite; }
         .avatar-container-hungry .chick-body { animation: stomachGrumble 1.5s ease-in-out infinite; }
 
         /* Thirsty state animations */
         .avatar-container-thirsty .chick-container { animation: thirstySadSway 3s ease-in-out infinite; }
         .avatar-container-thirsty .chick-head { animation: thirstySadHead 3s ease-in-out infinite; }
         .avatar-container-thirsty .chick-eye { animation: sadEyes 3s ease-in-out infinite; }
-        .avatar-container-thirsty .chick-wing { animation: sadDroop 3s ease-in-out infinite; }
+        .avatar-container-thirsty .chick-wing-left { animation: sadDroop 3s ease-in-out infinite; }
+        .avatar-container-thirsty .chick-wing-right { animation: sadDroop 3s ease-in-out infinite; }
         .avatar-container-thirsty .chick-cheek { opacity: 0.3; }
 
         /* Tired state animations */
         .avatar-container-tired .chick-container { animation: tiredSway 4s ease-in-out infinite; }
         .avatar-container-tired .chick-head { animation: tiredNod 4s ease-in-out infinite; }
         .avatar-container-tired .chick-eye { animation: sleepyEyes 4s ease-in-out infinite; }
-        .avatar-container-tired .chick-wing { animation: tiredDroop 4s ease-in-out infinite; }
+        .avatar-container-tired .chick-wing-left { animation: tiredDroop 4s ease-in-out infinite; }
+        .avatar-container-tired .chick-wing-right { animation: tiredDroop 4s ease-in-out infinite; }
 
         /* Wet state animations */
         .avatar-container-wet .chick-container { animation: wetShake 0.4s ease-in-out infinite; }
