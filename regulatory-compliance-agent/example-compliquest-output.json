@@ -1,0 +1,46 @@
+{
+  "success": true,
+  "data": {
+    "questions": [
+      {
+        "id": "unique-question-id-1",
+        "text": "Your organization lacks adequate Operational Resilience controls. No organizational control found to address requirement \"ICT Risk Management Framework\" What should be your immediate priority?",
+        "type": "multiple-choice",
+        "options": [
+          "Implement comprehensive risk assessment procedures with executive oversight",
+          "Schedule a meeting to discuss the issue",
+          "Document the gap for future consideration",
+          "Ignore the requirement as non-critical"
+        ],
+        "correctAnswer": 0,
+        "points": 60,
+        "category": "Operational Resilience",
+        "difficulty": "hard",
+        "metadata": {
+          "framework": "dora-2022",
+          "requirementId": "req-ict-risk-mgmt-001",
+          "gapSeverity": "CRITICAL",
+          "remediationLinks": [
+            "https://www.eba.europa.eu/regulation-and-policy/digital-operational-resilience"
+          ],
+          "achievements": [
+            "Critical Risk Resolver",
+            "Control Builder"
+          ],
+          "prerequisites": [
+            "Risk Assessment Fundamentals"
+          ]
+        }
+      }
+    ],
+    "metadata": {
+      "organizationId": "org-demo-bank-001",
+      "frameworkId": "dora-2022",
+      "generatedAt": "2026-03-06T13:08:00.000Z",
+      "totalGapsAnalyzed": 68,
+      "questionsGenerated": 4,
+      "compliancePercentage": 53
+    }
+  },
+  "message": "Successfully generated 4 CompliQuest-compatible questions"
+}

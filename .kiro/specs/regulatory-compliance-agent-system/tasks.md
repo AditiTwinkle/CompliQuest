@@ -77,7 +77,7 @@ This implementation plan prioritizes a working MVP for hackathon demonstration o
     - _Requirements: 4.3, 2.3_
 
 - [ ] 6. Implement question generation
-  - [-] 6.1 Create basic question generation logic
+  - [x] 6.1 Create basic question generation logic
     - Template-based question generation from gaps
     - Generate exactly 4 questions prioritizing high severity gaps
     - _Requirements: 3.1, 3.3_

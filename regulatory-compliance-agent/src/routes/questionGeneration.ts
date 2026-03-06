@@ -6,6 +6,26 @@ import { doraScraper } from '../services/doraScraper';
 import { logger } from '../utils/logger';
 import { ApiResponse } from '../types';
 
+/**
+ * Helper function to calculate average difficulty
+ */
+function calculateAverageDifficulty(questions: any[]): string {
+  if (questions.length === 0) return 'medium';
+  
+  const difficultyScores: Record<string, number> = {
+    'easy': 1,
+    'medium': 2,
+    'hard': 3,
+  };
+  
+  const totalScore = questions.reduce((sum, q) => sum + (difficultyScores[q.difficulty as string] || 2), 0);
+  const averageScore = totalScore / questions.length;
+  
+  if (averageScore <= 1.3) return 'easy';
+  if (averageScore <= 2.3) return 'medium';
+  return 'hard';
+}
+
 const router = Router();
 
 /**
@@ -242,7 +262,7 @@ router.get('/compliquest/:organizationId', async (req: Request, res: Response): 
             framework: frameworkId,
             lastUpdated: new Date().toISOString(),
             totalQuestions: questions.length,
-            averageDifficulty: this.calculateAverageDifficulty(questions),
+            averageDifficulty: calculateAverageDifficulty(questions),
             complianceContext: {
               totalGaps: analysisResult.gaps.length,
               compliancePercentage: analysisResult.compliancePercentage,
@@ -276,25 +296,5 @@ router.get('/compliquest/:organizationId', async (req: Request, res: Response): 
     } as ApiResponse<null>);
   }
 });
-
-/**
- * Helper function to calculate average difficulty
- */
-function calculateAverageDifficulty(questions: any[]): string {
-  if (questions.length === 0) return 'medium';
-  
-  const difficultyScores = {
-    'easy': 1,
-    'medium': 2,
-    'hard': 3,
-  };
-  
-  const totalScore = questions.reduce((sum, q) => sum + (difficultyScores[q.difficulty] || 2), 0);
-  const averageScore = totalScore / questions.length;
-  
-  if (averageScore <= 1.3) return 'easy';
-  if (averageScore <= 2.3) return 'medium';
-  return 'hard';
-}
 
 export default router;
