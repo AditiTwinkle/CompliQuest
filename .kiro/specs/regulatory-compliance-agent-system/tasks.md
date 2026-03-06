@@ -12,7 +12,7 @@ This implementation plan prioritizes a working MVP for hackathon demonstration o
 
 ## Tasks
 
-- [~] 1. Set up basic project structure and dependencies
+- [-] 1. Set up basic project structure and dependencies
   - Create TypeScript Node.js project with essential dependencies
   - Set up basic Express.js server for API endpoints
   - Configure environment variables for AWS Bedrock access
@@ -147,7 +147,7 @@ This implementation plan prioritizes a working MVP for hackathon demonstration o
     - Store extracted requirements and generated questions
     - _Requirements: 8.1, 8.2_
 
-- [ ] 10. Final checkpoint - Complete MVP validation
+- [~] 10. Final checkpoint - Complete MVP validation
   - Verify complete workflow: DORA scraping → gap analysis → 4 questions
   - Test CompliQuest JSON format compatibility
   - Validate error handling and resilience features
