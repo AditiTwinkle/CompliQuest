@@ -10,6 +10,7 @@ import { rateLimiter } from './middleware/rateLimiter';
 import healthRoutes from './routes/health';
 import scrapingRoutes from './routes/scraping';
 import organizationalChecklistRoutes from './routes/organizationalChecklist';
+import gapAnalysisRoutes from './routes/gapAnalysis';
 
 export const createApp = (): express.Application => {
   const app = express();
@@ -43,6 +44,7 @@ export const createApp = (): express.Application => {
   app.use('/api', healthRoutes);
   app.use('/api/scraping', scrapingRoutes);
   app.use('/api/organizational-checklist', organizationalChecklistRoutes);
+  app.use('/api/gap-analysis', gapAnalysisRoutes);
 
   // Catch 404 and forward to error handler
   app.use(notFoundHandler);
