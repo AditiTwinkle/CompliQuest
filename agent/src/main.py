@@ -3,7 +3,7 @@ CompliQuest Agent - Agentic compliance questionnaire powered by Bedrock AgentCor
 """
 
 from bedrock_agentcore import BedrockAgentCoreApp
-from strands import Agent, Tool
+from strands import Agent, tool
 import json
 from typing import Any
 
