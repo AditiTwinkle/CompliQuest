@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LSEGlingAvatar from '../components/LSEGlingAvatar';
+import { determineAvatarStates } from '../utils/avatarStateMapper';
 
 interface Alert {
   id: string;
@@ -31,6 +32,13 @@ export default function Dashboard() {
   }, []);
 
   const fetchData = async () => {
+    // Mock alerts - change this to test different duck states:
+    // - malnutritionOnly: hungry duck
+    // - shelterOnly: wet duck  
+    // - thirstOnly: thirsty duck
+    // - tiredOnly: tired duck
+    // - malnutritionAndShelter: hungry duck (priority)
+    // - allGood: happy duck
     const mockAlerts: Alert[] = [
       {
         id: 'alert-1',
@@ -75,6 +83,10 @@ export default function Dashboard() {
   };
 
   const urgentAlerts = alerts.filter((a) => a.severity === 'critical' || a.severity === 'high');
+  
+  // Determine duck states based on active alerts (supports multiple states)
+  const duckStates = determineAvatarStates(alerts);
+  const primaryState = duckStates[0] || 'happy';
 
   if (loading) {
     return (
@@ -98,15 +110,22 @@ export default function Dashboard() {
         </div>
 
         {/* Alert Section */}
-        {urgentAlerts.length > 0 && (
+        {urgentAlerts.length > 0 ? (
           <div className="duo-card bounce-in">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-[var(--duo-text-primary)] mb-4">
                 🚨 Your LSEGling needs help!
               </h2>
               <div className="flex justify-center mb-6">
-                <LSEGlingAvatar state="urgent" size="large" />
+                <LSEGlingAvatar states={duckStates} size="large" />
               </div>
+              <p className="text-[var(--duo-text-secondary)] font-medium mb-4">
+                {primaryState === 'hungry' && '🍔 Dilly is hungry! Help provide food resources.'}
+                {primaryState === 'wet' && '🏠 Dilly needs shelter! Help find housing.'}
+                {primaryState === 'thirsty' && '💧 Dilly is thirsty! Help provide water access.'}
+                {primaryState === 'tired' && '😴 Dilly is tired! Help reduce workload.'}
+                {duckStates.length > 1 && ` (${duckStates.length} issues need attention)`}
+              </p>
             </div>
 
             <div className="space-y-3">
@@ -127,6 +146,20 @@ export default function Dashboard() {
                   </button>
                 </div>
               ))}
+            </div>
+          </div>
+        ) : (
+          <div className="duo-card bounce-in">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-[var(--duo-text-primary)] mb-4">
+                ✨ Everything looks great!
+              </h2>
+              <div className="flex justify-center mb-4">
+                <LSEGlingAvatar state="happy" size="large" />
+              </div>
+              <p className="text-[var(--duo-text-secondary)] font-medium">
+                😊 Dilly is happy! All compliance requirements are being met.
+              </p>
             </div>
           </div>
         )}
