@@ -89,16 +89,37 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
           setAlerts(filteredAlerts);
           setPolicies(data.policies || []);
 
-          // Keep mock projects for now
+          // Calculate actual compliance based on localStorage
+          const totalPolicies = data.policies?.length || 4;
+          let compliantCount = 0;
+
+          // Check each policy's compliance status in localStorage
+          data.policies?.forEach((policy: PolicyConfig) => {
+            const isCompliant = localStorage.getItem(policy.complianceProperty) === 'true';
+            if (isCompliant) {
+              compliantCount++;
+            }
+          });
+
+          const actualComplianceScore = Math.round((compliantCount / totalPolicies) * 100);
+
+          console.log('Project compliance calculation:', {
+            totalPolicies,
+            compliantCount,
+            actualComplianceScore,
+            filteredAlertsCount: filteredAlerts.length
+          });
+
+          // Create project with actual compliance score
           const mockProjects: Project[] = [
             {
               id: 'proj-1',
               name: 'DORA Compliance Challenge',
               framework: 'DORA',
-              complianceScore: data.metadata?.compliance?.overallPercentage || 0,
-              totalControls: 10,
-              compliantControls: Math.round((data.metadata?.compliance?.overallPercentage || 0) / 10),
-              nonCompliantControls: 10 - Math.round((data.metadata?.compliance?.overallPercentage || 0) / 10),
+              complianceScore: actualComplianceScore,
+              totalControls: totalPolicies,
+              compliantControls: compliantCount,
+              nonCompliantControls: totalPolicies - compliantCount,
             },
           ];
           setProjects(mockProjects);
@@ -174,7 +195,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
       // Mock projects with dynamic compliance based on resolved gaps
       // Each project has exactly 1 gap that can be resolved
-      
+
       // GDPR has 10 controls: 9 baseline compliant + 1 gap (hungry)
       const gdprTotalCompliant = hungryCompliant ? 10 : 9;
       const gdprTotalNonCompliant = hungryCompliant ? 0 : 1;
@@ -258,9 +279,6 @@ export function useNotifications() {
   const context = useContext(NotificationContext);
   if (context === undefined) {
     throw new Error('useNotifications must be used within a NotificationProvider');
-  }
-  return context;
-}
   }
   return context;
 }
