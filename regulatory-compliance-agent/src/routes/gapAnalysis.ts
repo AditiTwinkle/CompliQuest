@@ -11,16 +11,17 @@ const router = Router();
  * POST /api/gap-analysis/analyze
  * Perform gap analysis between DORA requirements and organizational controls
  */
-router.post('/analyze', async (req: Request, res: Response) => {
+router.post('/analyze', async (req: Request, res: Response): Promise<void> => {
   try {
     const { organizationId, frameworkId } = req.body;
 
     // Validate required parameters
     if (!organizationId || !frameworkId) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         error: 'Missing required parameters: organizationId and frameworkId',
       } as ApiResponse<null>);
+      return;
     }
 
     logger.info('Starting gap analysis', { organizationId, frameworkId });
@@ -31,10 +32,11 @@ router.post('/analyze', async (req: Request, res: Response) => {
     const requirements = doraContent.requirements;
 
     if (requirements.length === 0) {
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         error: 'No DORA requirements found',
       } as ApiResponse<null>);
+      return;
     }
 
     // Get organizational controls
@@ -42,10 +44,11 @@ router.post('/analyze', async (req: Request, res: Response) => {
     const organizationalControls = await organizationalChecklistService.getOrganizationalControls(organizationId);
 
     if (organizationalControls.length === 0) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         error: 'No organizational controls found for the specified organization',
       } as ApiResponse<null>);
+      return;
     }
 
     // Perform gap analysis
@@ -98,7 +101,7 @@ router.post('/analyze', async (req: Request, res: Response) => {
  * GET /api/gap-analysis/demo
  * Get demo gap analysis for the demo organization
  */
-router.get('/demo', async (req: Request, res: Response) => {
+router.get('/demo', async (req: Request, res: Response): Promise<void> => {
   try {
     logger.info('Running demo gap analysis');
 
@@ -163,7 +166,7 @@ router.get('/demo', async (req: Request, res: Response) => {
  * GET /api/gap-analysis/summary/:organizationId
  * Get gap analysis summary for an organization
  */
-router.get('/summary/:organizationId', async (req: Request, res: Response) => {
+router.get('/summary/:organizationId', async (req: Request, res: Response): Promise<void> => {
   try {
     const { organizationId } = req.params;
     const { frameworkId = 'dora-2022' } = req.query;
