@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import LSEGlingAvatar from '../components/LSEGlingAvatar';
 import { determineAvatarStates } from '../utils/avatarStateMapper';
 
@@ -7,7 +7,7 @@ interface Alert {
   id: string;
   title: string;
   message: string;
-  severity: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
   status: string;
 }
 
@@ -31,38 +31,78 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
+  const handleDemoReset = () => {
+    // Reset all policy compliance states to non-compliant
+    localStorage.removeItem('hungry-compliant');
+    localStorage.removeItem('wet-compliant');
+    localStorage.removeItem('tired-compliant');
+    localStorage.removeItem('thirsty-compliant');
+
+    // Reload the data to show all policies again
+    fetchData();
+  };
+
   const fetchData = async () => {
-    // Mock alerts - these simulate non-compliant questions
-    const mockAlerts: Alert[] = [
-      {
-        id: 'alert-1',
+    // Check compliance status from localStorage
+    const hungryCompliant = localStorage.getItem('hungry-compliant') === 'true';
+    const wetCompliant = localStorage.getItem('wet-compliant') === 'true';
+    const tiredCompliant = localStorage.getItem('tired-compliant') === 'true';
+    const thirstyCompliant = localStorage.getItem('thirsty-compliant') === 'true';
+
+    // Mock alerts representing policy compliance issues - only show non-compliant
+    const mockAlerts: Alert[] = [];
+
+    if (!hungryCompliant) {
+      const wasAttempted = localStorage.getItem('hungry-compliant') === 'false';
+      mockAlerts.push({
+        id: 'policy-1',
         title: 'Malnutrition',
-        message: 'Missing food resources - Click "Resolve" to mark as compliant',
+        message: wasAttempted
+          ? '❌ Previous answer was incorrect. Please try again.'
+          : 'Food policy not compliant',
         severity: 'high',
         status: 'active',
-      },
-      {
-        id: 'alert-2',
-        title: 'Shelter',
-        message: 'Missing shelter resources - Click "Resolve" to mark as compliant',
+      });
+    }
+
+    if (!wetCompliant) {
+      const wasAttempted = localStorage.getItem('wet-compliant') === 'false';
+      mockAlerts.push({
+        id: 'policy-2',
+        title: 'Need shelter',
+        message: wasAttempted
+          ? '❌ Previous answer was incorrect. Please try again.'
+          : 'Shelter policy not compliant',
         severity: 'high',
         status: 'active',
-      },
-      {
-        id: 'alert-3',
-        title: 'Water Access',
-        message: 'Missing water resources - Click "Resolve" to mark as compliant',
-        severity: 'medium',
+      });
+    }
+
+    if (!tiredCompliant) {
+      const wasAttempted = localStorage.getItem('tired-compliant') === 'false';
+      mockAlerts.push({
+        id: 'policy-3',
+        title: 'Need sleep',
+        message: wasAttempted
+          ? '❌ Previous answer was incorrect. Please try again.'
+          : 'Sleep policy not compliant',
+        severity: 'high',
         status: 'active',
-      },
-      {
-        id: 'alert-4',
-        title: 'Fatigue',
-        message: 'Workload too high - Click "Resolve" to mark as compliant',
-        severity: 'medium',
+      });
+    }
+
+    if (!thirstyCompliant) {
+      const wasAttempted = localStorage.getItem('thirsty-compliant') === 'false';
+      mockAlerts.push({
+        id: 'policy-4',
+        title: 'Need water',
+        message: wasAttempted
+          ? '❌ Previous answer was incorrect. Please try again.'
+          : 'Water policy not compliant',
+        severity: 'high',
         status: 'active',
-      },
-    ];
+      });
+    }
 
     const mockProjects: Project[] = [
       {
@@ -90,33 +130,11 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  // Handle resolving an alert (marking question as compliant)
-  const handleResolveAlert = (alertId: string) => {
-    setAlerts(prevAlerts => 
-      prevAlerts.map(alert => 
-        alert.id === alertId 
-          ? { ...alert, status: 'resolved' }
-          : alert
-      )
-    );
-  };
+  const urgentAlerts = alerts.filter((a) => a.severity === 'critical' || a.severity === 'high');
 
-  // Get only active (non-resolved) alerts
-  const activeAlerts = alerts.filter(a => a.status === 'active');
-  const urgentAlerts = activeAlerts.filter((a) => a.severity === 'critical' || a.severity === 'high');
-  
-  // Determine duck states based on active alerts (supports multiple states)
-  const duckStates = determineAvatarStates(activeAlerts);
+  // Determine duck states based on alerts (supports multiple states)
+  const duckStates = determineAvatarStates(alerts);
   const primaryState = duckStates[0] || 'happy';
-
-  // Get icon for alert type
-  const getAlertIcon = (title: string) => {
-    if (title.toLowerCase().includes('malnutrition') || title.toLowerCase().includes('food')) return '🍔';
-    if (title.toLowerCase().includes('shelter') || title.toLowerCase().includes('housing')) return '🏠';
-    if (title.toLowerCase().includes('water') || title.toLowerCase().includes('thirst')) return '💧';
-    if (title.toLowerCase().includes('fatigue') || title.toLowerCase().includes('tired')) return '😴';
-    return '⚠️';
-  };
 
   if (loading) {
     return (
@@ -133,9 +151,21 @@ export default function Dashboard() {
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-[var(--duo-text-primary)] mb-2">
-            🎮 CompliQuest
-          </h1>
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex-1"></div>
+            <h1 className="text-4xl font-bold text-[var(--duo-text-primary)] flex-1">
+              🎮 CompliQuest
+            </h1>
+            <div className="flex-1 flex justify-end">
+              <button
+                onClick={handleDemoReset}
+                className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 border-2 border-gray-300 rounded-lg hover:bg-gray-200 hover:border-gray-400 transition-all"
+                title="Reset all policies to non-compliant for demo purposes"
+              >
+                🔄 Demo Reset
+              </button>
+            </div>
+          </div>
           <p className="text-[var(--duo-text-secondary)] text-lg font-medium">Complete challenges to protect your community!</p>
         </div>
 
@@ -159,34 +189,31 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-3">
-              {urgentAlerts.map((alert) => (
-                <div key={alert.id} className="duo-error-box flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl">{getAlertIcon(alert.title)}</span>
-                    <div>
-                      <p className="font-bold text-[var(--duo-text-primary)]">{alert.title}</p>
-                      <p className="text-sm text-[var(--duo-text-secondary)]">{alert.message}</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleResolveAlert(alert.id)}
-                    className="duo-button-primary text-sm"
-                  >
-                    Resolve ✓
-                  </button>
-                </div>
-              ))}
-            </div>
+              {urgentAlerts.map((alert) => {
+                const policyNumber = alert.id.split('-')[1];
+                const icons = ['🍔', '🏠', '😴', '💧'];
+                const iconIndex = parseInt(policyNumber) - 1;
 
-            {/* Show resolved count */}
-            {alerts.filter(a => a.status === 'resolved').length > 0 && (
-              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-800 font-medium text-center">
-                  ✅ {alerts.filter(a => a.status === 'resolved').length} issue(s) resolved! 
-                  {activeAlerts.length === 0 && ' Dilly is happy now! 🎉'}
-                </p>
-              </div>
-            )}
+                return (
+                  <div key={alert.id} className="duo-error-box flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">{icons[iconIndex] || '⚠️'}</span>
+                      <div>
+                        <p className="font-bold text-[var(--duo-text-primary)]">Policy {policyNumber}: {alert.title}</p>
+                        <p className="text-sm text-[var(--duo-text-secondary)]">{alert.message}</p>
+                      </div>
+                    </div>
+                    <Link
+                      to={`/policy/${policyNumber}`}
+                      className="duo-button-primary text-sm inline-block no-underline"
+                      style={{ display: 'inline-block', textDecoration: 'none' }}
+                    >
+                      Fix Now
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         ) : (
           <div className="duo-card bounce-in">
@@ -200,11 +227,6 @@ export default function Dashboard() {
               <p className="text-[var(--duo-text-secondary)] font-medium">
                 😊 Dilly is happy! All compliance requirements are being met.
               </p>
-              {alerts.filter(a => a.status === 'resolved').length > 0 && (
-                <p className="text-sm text-green-600 font-medium mt-2">
-                  You resolved {alerts.filter(a => a.status === 'resolved').length} issue(s)!
-                </p>
-              )}
             </div>
           </div>
         )}

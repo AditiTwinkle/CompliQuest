@@ -43,7 +43,7 @@ export function determineAvatarStates(alerts: Alert[]): AvatarState[] {
   }
 
   const activeAlerts = alerts.filter(alert => alert.status === 'active');
-  
+
   if (activeAlerts.length === 0) {
     return ['happy'];
   }
@@ -69,17 +69,17 @@ export function determineAvatarStates(alerts: Alert[]): AvatarState[] {
   if (allText.includes('malnutrition') || allText.includes('food') || allText.includes('hungry') || allText.includes('nutrition')) {
     states.push('hungry');
   }
-  
-  if (allText.includes('shelter') || allText.includes('housing') || allText.includes('wet') || allText.includes('homeless')) {
+
+  if (allText.includes('shelter') || allText.includes('housing') || allText.includes('wet') || allText.includes('homeless') || allText.includes('need shelter')) {
     states.push('wet');
   }
-  
-  if (allText.includes('thirst') || allText.includes('water') || allText.includes('hydration') || allText.includes('drink')) {
-    states.push('thirsty');
-  }
-  
-  if (allText.includes('tired') || allText.includes('fatigue') || allText.includes('exhausted') || allText.includes('sleep')) {
+
+  if (allText.includes('sleep') || allText.includes('tired') || allText.includes('fatigue') || allText.includes('exhausted') || allText.includes('need sleep')) {
     states.push('tired');
+  }
+
+  if (allText.includes('thirst') || allText.includes('water') || allText.includes('hydration') || allText.includes('drink') || allText.includes('need water')) {
+    states.push('thirsty');
   }
 
   return states.length > 0 ? states : ['happy'];
