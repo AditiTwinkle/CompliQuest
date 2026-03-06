@@ -66,7 +66,6 @@ This implementation plan prioritizes a working MVP for hackathon demonstration o
 - [ ] 5. Integrate AWS Bedrock for intelligent processing
   - [~] 5.1 Set up basic Bedrock client configuration
     - Configure Claude 3.5 Sonnet model access
-    - Add basic error handling and retry logic
     - _Requirements: 4.1, 4.2, 4.6_
 
   - [~] 5.2 Enhance requirement extraction with AI

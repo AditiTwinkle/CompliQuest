@@ -256,7 +256,7 @@ export class WebScrapingAgent {
    */
   private extractRequirementFromElement(
     $: cheerio.CheerioAPI,
-    element: cheerio.Element,
+    element: any,
     framework: string,
     index: number
   ): Requirement | null {
@@ -362,7 +362,7 @@ export class WebScrapingAgent {
   /**
    * Extract section number from title or element
    */
-  private extractSectionNumber(title: string, $element: cheerio.Cheerio<cheerio.Element>): string | null {
+  private extractSectionNumber(title: string, $element: cheerio.Cheerio<any>): string | null {
     // Try to extract from title
     const titleMatch = title.match(/(?:Article|Art\.?)\s+(\d+(?:\.\d+)*)/i);
     if (titleMatch) {

@@ -53,7 +53,7 @@ router.post('/dora', async (req: Request, res: Response) => {
  * POST /api/scraping/custom
  * Scrape requirements from a custom URL
  */
-router.post('/custom', async (req: Request, res: Response) => {
+router.post('/custom', async (req: Request, res: Response): Promise<void> => {
   try {
     const { url, framework } = req.body;
 
@@ -62,7 +62,8 @@ router.post('/custom', async (req: Request, res: Response) => {
         success: false,
         error: 'Missing required fields: url and framework',
       };
-      return res.status(400).json(response);
+      res.status(400).json(response);
+      return;
     }
 
     logger.info('Custom scraping request received', { url, framework });
