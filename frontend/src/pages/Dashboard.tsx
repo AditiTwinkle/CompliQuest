@@ -136,6 +136,21 @@ export default function Dashboard() {
   const duckStates = determineAvatarStates(alerts);
   const primaryState = duckStates[0] || 'happy';
 
+  // Get speech bubble message based on state
+  const getSpeechBubbleMessage = () => {
+    if (duckStates.length === 0 || primaryState === 'happy') {
+      return "I'm so happy! 😊";
+    }
+
+    const messages: { [key: string]: string } = {
+      hungry: "I'm hungry! 🍔",
+      wet: "Need shelter! 🏠",
+      thirsty: "I'm thirsty! 💧",
+      tired: "So tired! 😴",
+    };
+    return messages[primaryState] || "Help!";
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -174,18 +189,15 @@ export default function Dashboard() {
           <div className="duo-card bounce-in">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-[var(--duo-text-primary)] mb-4">
-                🚨 Your LSEGling needs help!
+                🚨 Your LSEGling needs help! ({urgentAlerts.length} {urgentAlerts.length === 1 ? 'issue' : 'issues'})
               </h2>
               <div className="flex justify-center mb-6">
-                <LSEGlingAvatar states={duckStates} size="large" />
+                <LSEGlingAvatar 
+                  states={duckStates} 
+                  size="large" 
+                  speechBubble={duckStates.length === 1 ? getSpeechBubbleMessage() : undefined}
+                />
               </div>
-              <p className="text-[var(--duo-text-secondary)] font-medium mb-4">
-                {primaryState === 'hungry' && '🍔 Dilly is hungry! Help provide food resources.'}
-                {primaryState === 'wet' && '🏠 Dilly needs shelter! Help find housing.'}
-                {primaryState === 'thirsty' && '💧 Dilly is thirsty! Help provide water access.'}
-                {primaryState === 'tired' && '😴 Dilly is tired! Help reduce workload.'}
-                {duckStates.length > 1 && ` (${duckStates.length} issues need attention)`}
-              </p>
             </div>
 
             <div className="space-y-3">
@@ -222,11 +234,12 @@ export default function Dashboard() {
                 ✨ Everything looks great!
               </h2>
               <div className="flex justify-center mb-4">
-                <LSEGlingAvatar state="happy" size="large" />
+                <LSEGlingAvatar 
+                  state="happy" 
+                  size="large" 
+                  speechBubble="I'm so happy! 😊"
+                />
               </div>
-              <p className="text-[var(--duo-text-secondary)] font-medium">
-                😊 Dilly is happy! All compliance requirements are being met.
-              </p>
             </div>
           </div>
         )}

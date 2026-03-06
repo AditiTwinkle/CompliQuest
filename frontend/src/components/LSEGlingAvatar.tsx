@@ -9,6 +9,7 @@ interface LSEGlingAvatarProps {
   badgeText?: string;
   onClick?: () => void;
   size?: 'small' | 'medium' | 'large';
+  speechBubble?: string; // Optional speech bubble message
 }
 
 function LSEGlingAvatar({
@@ -18,6 +19,7 @@ function LSEGlingAvatar({
   badgeText = '',
   onClick,
   size = 'medium',
+  speechBubble,
 }: LSEGlingAvatarProps) {
   const [currentStates, setCurrentStates] = useState<AvatarState[]>(states || [state]);
 
@@ -41,6 +43,34 @@ function LSEGlingAvatar({
     console.log('Is wet:', isWet);
     console.log('Background:', getBackgroundGradient());
   }, [currentStates, isWet]);
+
+  // Get particle emoji based on primary state
+  const getParticleEmoji = () => {
+    const primaryState = currentStates[0] || 'happy';
+    const particles: { [key: string]: string } = {
+      happy: '💛',
+      hungry: '🍗',
+      thirsty: '💧',
+      tired: '💤',
+      wet: '💦',
+    };
+    return particles[primaryState] || '💛';
+  };
+
+  // Generate random particles
+  const [particles, setParticles] = useState<Array<{ id: number; left: string; top: string; delay: string }>>([]);
+
+  useEffect(() => {
+    // Generate 3-5 particles at random positions
+    const particleCount = 4;
+    const newParticles = Array.from({ length: particleCount }, (_, i) => ({
+      id: i,
+      left: `${40 + Math.random() * 20}%`,
+      top: `${50 + Math.random() * 20}%`,
+      delay: `${Math.random() * 2}s`,
+    }));
+    setParticles(newParticles);
+  }, [currentStates]);
 
   const getSizeClasses = () => {
     switch (size) {
@@ -511,12 +541,41 @@ function LSEGlingAvatar({
         .avatar-container-wet .chick-wing-left { animation: wetFlapLeft 0.2s ease-in-out infinite; }
         .avatar-container-wet .chick-wing-right { animation: wetFlapRight 0.2s ease-in-out infinite; }
 
+        /* Clouds */}
+        .cloud {
+          position: absolute;
+          background: rgba(255, 255, 255, 0.7);
+          border-radius: 50%;
+          transition: all 0.8s ease;
+        }
+
+        .cloud::before,
+        .cloud::after {
+          content: '';
+          position: absolute;
+          background: rgba(255, 255, 255, 0.7);
+          border-radius: 50%;
+          transition: all 0.8s ease;
+        }
+
+        /* Dark storm clouds when wet */
+        .avatar-container-wet .cloud {
+          background: rgba(80, 80, 100, 0.8);
+        }
+
+        .avatar-container-wet .cloud::before,
+        .avatar-container-wet .cloud::after {
+          background: rgba(80, 80, 100, 0.8);
+        }
+
         @keyframes cloudDrift {
           0% { transform: translateX(-20px); }
           100% { transform: translateX(calc(100% + 20px)); }
         }
 
-        .cloud-float { animation: cloudDrift 30s linear infinite; }
+        .cloud-float { 
+          animation: cloudDrift 30s linear infinite; 
+        }
 
         @keyframes rainFall {
           0% { transform: translateY(-10px); opacity: 0; }
@@ -535,6 +594,226 @@ function LSEGlingAvatar({
           border-radius: 100% 100% 0 0;
           transition: background 0.8s ease;
         }
+
+        /* Flowers */
+        .flower {
+          position: absolute;
+          transition: all 0.8s ease;
+          font-size: 24px;
+        }
+
+        .avatar-container-wet .flower {
+          filter: grayscale(0.6) brightness(0.7);
+          transform: rotate(25deg) translateY(8px) scale(0.85);
+          opacity: 0.6;
+        }
+
+        /* Floating particles - hearts, food, water, etc */
+        .particles {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 3;
+        }
+
+        .particle {
+          position: absolute;
+          font-size: 18px;
+          opacity: 0;
+          animation: particleRise 2.5s ease-out infinite;
+        }
+
+        @keyframes particleRise {
+          0% { opacity: 0.9; transform: translateY(0) scale(1) rotate(0deg); }
+          100% { opacity: 0; transform: translateY(-50px) scale(0.6) rotate(15deg); }
+        }
+
+        /* Rumble lines around belly for hungry state */
+        .rumble-lines {
+          display: none;
+          position: absolute;
+          width: 140%;
+          height: 100%;
+          left: -20%;
+          top: 0;
+          pointer-events: none;
+        }
+
+        .avatar-container-hungry .rumble-lines {
+          display: block;
+        }
+
+        .rumble-line {
+          position: absolute;
+          width: 12px;
+          height: 3px;
+          background: #ff9800;
+          border-radius: 3px;
+          opacity: 0;
+          animation: rumblePulse 1.5s ease-in-out infinite;
+        }
+
+        .rumble-line:nth-child(1) { left: -5px; top: 40%; transform: rotate(-20deg); animation-delay: 0.5s; }
+        .rumble-line:nth-child(2) { left: -8px; top: 55%; transform: rotate(10deg); animation-delay: 0.6s; }
+        .rumble-line:nth-child(3) { right: -5px; top: 40%; transform: rotate(20deg); animation-delay: 0.55s; }
+        .rumble-line:nth-child(4) { right: -8px; top: 55%; transform: rotate(-10deg); animation-delay: 0.65s; }
+
+        @keyframes rumblePulse {
+          0%, 40%, 80%, 100% { opacity: 0; transform: translateX(0) scaleX(1); }
+          50% { opacity: 0.8; transform: translateX(-3px) scaleX(1.3); }
+          60% { opacity: 0.5; transform: translateX(2px) scaleX(0.8); }
+          70% { opacity: 0.3; transform: translateX(-1px) scaleX(1); }
+        }
+
+        /* Speech bubble styles */
+        .speech-bubble {
+          position: absolute;
+          background: white;
+          border-radius: 12px;
+          padding: 8px 12px;
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+          border: 2px solid var(--duo-primary, #6366f1);
+          z-index: 25;
+          max-width: 140px;
+          font-size: 12px;
+          line-height: 1.3;
+          animation: bubbleBounce 2s ease-in-out infinite;
+        }
+
+        /* Single bubble - centered above duck, within container */
+        .speech-bubble-single {
+          top: 12%;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        /* Multiple bubbles - positioned within container bounds */
+        .speech-bubble-multi-0 {
+          top: 8%;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .speech-bubble-multi-1 {
+          top: 28%;
+          left: 8%;
+        }
+
+        .speech-bubble-multi-2 {
+          top: 28%;
+          right: 8%;
+        }
+
+        .speech-bubble-multi-3 {
+          top: 48%;
+          left: 10%;
+        }
+
+        .speech-bubble-happy {
+          border-color: #10b981;
+        }
+
+        /* Clearer arrow tails */
+        .speech-bubble::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 0;
+          border-left: 10px solid transparent;
+          border-right: 10px solid transparent;
+          border-top: 12px solid var(--duo-primary, #6366f1);
+        }
+
+        /* Tail for single/first bubble - pointing down */
+        .speech-bubble-single::after,
+        .speech-bubble-multi-0::after {
+          bottom: -10px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        /* Tail for left bubbles - pointing toward center */
+        .speech-bubble-multi-1::after,
+        .speech-bubble-multi-3::after {
+          top: 50%;
+          right: -8px;
+          transform: translateY(-50%) rotate(90deg);
+        }
+
+        /* Tail for right bubbles - pointing toward center */
+        .speech-bubble-multi-2::after {
+          top: 50%;
+          left: -8px;
+          transform: translateY(-50%) rotate(-90deg);
+        }
+
+        .speech-bubble-happy::after {
+          border-top-color: #10b981;
+        }
+
+        /* Inner white triangle */
+        .speech-bubble::before {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 0;
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          border-top: 10px solid white;
+          z-index: 1;
+        }
+
+        /* Inner tail for single/first bubble */
+        .speech-bubble-single::before,
+        .speech-bubble-multi-0::before {
+          bottom: -8px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        /* Inner tail for left bubbles */
+        .speech-bubble-multi-1::before,
+        .speech-bubble-multi-3::before {
+          top: 50%;
+          right: -6px;
+          transform: translateY(-50%) rotate(90deg);
+        }
+
+        /* Inner tail for right bubbles */
+        .speech-bubble-multi-2::before {
+          top: 50%;
+          left: -6px;
+          transform: translateY(-50%) rotate(-90deg);
+        }
+
+        @keyframes bubbleBounce {
+          0%, 100% { transform: translateX(-50%) translateY(0); }
+          50% { transform: translateX(-50%) translateY(-3px); }
+        }
+
+        /* Adjust bounce for side bubbles */
+        .speech-bubble-multi-1 {
+          animation: bubbleBounceLeft 2s ease-in-out infinite;
+        }
+
+        .speech-bubble-multi-2 {
+          animation: bubbleBounceRight 2s ease-in-out infinite;
+        }
+
+        .speech-bubble-multi-3 {
+          animation: bubbleBounceLeft 2s ease-in-out infinite;
+        }
+
+        @keyframes bubbleBounceLeft {
+          0%, 100% { transform: translateX(0) translateY(0); }
+          50% { transform: translateX(0) translateY(-3px); }
+        }
+
+        @keyframes bubbleBounceRight {
+          0%, 100% { transform: translateX(0) translateY(0); }
+          50% { transform: translateX(0) translateY(-3px); }
+        }
       `}</style>
 
       <div
@@ -542,22 +821,85 @@ function LSEGlingAvatar({
         style={sizeStyles}
         onClick={onClick}
       >
+        {/* Speech Bubbles - show one per state if multiple states */}
+        {speechBubble && currentStates.length === 1 && (
+          <div className={`speech-bubble speech-bubble-single ${currentStates.includes('happy') ? 'speech-bubble-happy' : ''}`}>
+            <p className="text-xs font-bold text-gray-800 m-0 leading-tight">
+              {speechBubble}
+            </p>
+          </div>
+        )}
+        
+        {/* Multiple speech bubbles for multiple states */}
+        {currentStates.length > 1 && currentStates.filter(s => s !== 'happy').map((state, index) => {
+          const messages: { [key: string]: string } = {
+            hungry: "I'm hungry! 🍔",
+            wet: "Need shelter! 🏠",
+            thirsty: "I'm thirsty! 💧",
+            tired: "So tired! 😴",
+          };
+          return (
+            <div 
+              key={state}
+              className={`speech-bubble speech-bubble-multi-${index}`}
+            >
+              <p className="text-xs font-bold text-gray-800 m-0 leading-tight">
+                {messages[state] || "Help!"}
+              </p>
+            </div>
+          );
+        })}
+
+        {/* Floating Particles */}
+        <div className="particles">
+          {particles.map((particle) => (
+            <div
+              key={particle.id}
+              className="particle"
+              style={{
+                left: particle.left,
+                top: particle.top,
+                animationDelay: particle.delay,
+              }}
+            >
+              {getParticleEmoji()}
+            </div>
+          ))}
+        </div>
+
         {/* Clouds */}
         <div className="absolute top-0 left-0 w-full h-1/3 overflow-hidden pointer-events-none">
           <div 
-            className="cloud-float absolute w-16 h-6 rounded-full opacity-70"
+            className="cloud cloud-float absolute rounded-full opacity-70"
             style={{ 
+              width: '80px',
+              height: '30px',
               background: isWet ? 'rgba(80, 80, 100, 0.8)' : 'rgba(255, 255, 255, 0.7)',
               top: '10%',
+              left: '0',
               animationDelay: '0s'
             }}
           />
           <div 
-            className="cloud-float absolute w-20 h-7 rounded-full opacity-60"
+            className="cloud cloud-float absolute rounded-full opacity-60"
             style={{ 
+              width: '100px',
+              height: '35px',
               background: isWet ? 'rgba(80, 80, 100, 0.8)' : 'rgba(255, 255, 255, 0.7)',
               top: '25%',
+              left: '0',
               animationDelay: '-10s'
+            }}
+          />
+          <div 
+            className="cloud cloud-float absolute rounded-full opacity-50"
+            style={{ 
+              width: '60px',
+              height: '25px',
+              background: isWet ? 'rgba(80, 80, 100, 0.8)' : 'rgba(255, 255, 255, 0.7)',
+              top: '45%',
+              left: '0',
+              animationDelay: '-20s'
             }}
           />
         </div>
@@ -638,6 +980,14 @@ function LSEGlingAvatar({
           <div className="chick-body">
             <div className="chick-wing chick-wing-left"></div>
             <div className="chick-wing chick-wing-right"></div>
+            
+            {/* Rumble lines for hungry state */}
+            <div className="rumble-lines">
+              <div className="rumble-line"></div>
+              <div className="rumble-line"></div>
+              <div className="rumble-line"></div>
+              <div className="rumble-line"></div>
+            </div>
           </div>
           
           <div className="chick-tail">
@@ -654,11 +1004,17 @@ function LSEGlingAvatar({
 
         {/* Ground */}
         <div className="ground-grass">
-          {!isWet && (
+          {!isWet ? (
             <>
-              <span className="absolute left-[15%] bottom-[60%] text-2xl">🌸</span>
-              <span className="absolute right-[20%] bottom-[60%] text-2xl">🌼</span>
-              <span className="absolute left-[40%] bottom-[40%] text-xl">🌷</span>
+              <span className="flower absolute left-[15%] bottom-[60%] text-2xl">🌸</span>
+              <span className="flower absolute right-[20%] bottom-[60%] text-2xl">🌼</span>
+              <span className="flower absolute left-[40%] bottom-[40%] text-xl">🌷</span>
+            </>
+          ) : (
+            <>
+              <span className="flower absolute left-[15%] bottom-[60%] text-2xl">🌸</span>
+              <span className="flower absolute right-[20%] bottom-[60%] text-2xl">🌼</span>
+              <span className="flower absolute left-[40%] bottom-[40%] text-xl">🌷</span>
             </>
           )}
         </div>

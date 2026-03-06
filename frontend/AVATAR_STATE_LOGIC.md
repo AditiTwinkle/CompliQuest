@@ -1,7 +1,39 @@
 # Duck Avatar State Logic
 
 ## Overview
-The LSEGling duck avatar (Dilly) dynamically changes its animation state based on compliance alerts in the system. This provides visual feedback to users about what needs attention.
+The LSEGling duck avatar (Dilly) dynamically changes its animation state based on compliance status in the system. This provides visual feedback to users about what needs attention.
+
+## Core Workflow Logic
+
+### Default State: Happy
+- **Condition:** All questions are `compliant = true`
+- **Meaning:** No actions or remediation needed
+- **Animation:** Cheerful bouncing, happy expression
+- **User Action:** None required
+
+### Non-Compliant States
+When `compliant = false`, the duck enters distress state(s) based on the policy type:
+## Priority Order
+
+When multiple alerts exist, all states are shown simultaneously (multi-state support):
+
+**Example:** Malnutrition + Shelter alerts
+- Duck shows: `['hungry', 'wet']`
+- Animations: Hopping (hungry) + Shaking (wet) + Rain (wet)
+- Background: Dark/rainy (wet takes priority for environment)
+
+## Multi-State Combinations
+
+The duck can show any combination of states:
+- Single: `[hungry]`, `[wet]`, `[thirsty]`, `[tired]`
+- Dual: `[hungry, wet]`, `[hungry, thirsty]`, `[wet, tired]`, etc.
+- Triple: `[hungry, thirsty, wet]`, `[hungry, wet, tired]`, etc.
+- All: `[hungry, thirsty, wet, tired]` - Maximum distress
+1. User sees non-compliant duck in distress state
+2. User clicks "Fix Now" and resolves the issue
+3. Question becomes `compliant = true`
+4. Duck state updates (removes resolved state)
+5. When all resolved → duck returns to `happy`
 
 ## State Mapping
 
@@ -23,6 +55,13 @@ When multiple alerts exist, the duck shows the highest priority state:
 4. **Tired** (fatigue) - Lower priority
 5. **Happy** (no issues) - Default
 
+
+Happy - compliant true/false
+Thirsty - compliant true/false
+Tired - compliant true /false
+Wet - compliant true/fasle
+Hungry - compliant true/false
+ge
 ## Implementation
 
 ### Core Files
@@ -46,43 +85,49 @@ When multiple alerts exist, the duck shows the highest priority state:
 ```typescript
 import LSEGlingAvatar from '../components/LSEGlingAvatar';
 import { determineAvatarState } from '../utils/avatarStateMapper';
+## Future Enhancements
 
-// In your component
-const alerts = [
-  { title: 'Malnutrition', message: 'Missing food', severity: 'high', status: 'active' },
-  { title: 'Shelter', message: 'Missing shelter', severity: 'high', status: 'active' }
-];
-
-const duckState = determineAvatarState(alerts); // Returns 'hungry'
-
-<LSEGlingAvatar state={duckState} size="large" />
-```
-
-## Testing Different States
-
-To test different duck states, modify the mock alerts in `Dashboard.tsx`:
+### Backend Integration
+When connected to real compliance data:
 
 ```typescript
-// Test hungry duck
-const mockAlerts = [
-  { id: '1', title: 'Malnutrition', message: 'Missing food', severity: 'high', status: 'active' }
-];
+// Fetch compliance questions from API
+const questions = await fetchComplianceQuestions();
+// Example: [
+//   { id: 'q1', policyType: 'food', compliant: false },
+//   { id: 'q2', policyType: 'shelter', compliant: false },
+//   { id: 'q3', policyType: 'water', compliant: true }
+// ]
 
-// Test wet duck
-const mockAlerts = [
-  { id: '1', title: 'Shelter', message: 'Missing shelter', severity: 'high', status: 'active' }
-];
+// Use policy mappings to determine states
+import { getDuckStatesFromQuestions } from './config/policyStateMappings';
+const duckStates = getDuckStatesFromQuestions(questions);
+// Returns: ['hungry', 'wet']
 
-// Test happy duck
-const mockAlerts = [];
+// Render duck
+<LSEGlingAvatar states={duckStates} />
 ```
 
-Or use the predefined scenarios from `mockAlertScenarios.ts`:
+### Policy Type Mappings
+Each policy change will be mapped to a duck state. Configuration is ready in:
+- `frontend/src/config/policyStateMappings.ts`
 
-```typescript
-import { alertScenarios } from '../utils/mockAlertScenarios';
+To add new policy types:
+1. Add entry to `policyStateMappings` array
+2. Define policy type, duck state, and remediation action
+3. System automatically uses new mapping
 
-const mockAlerts = alertScenarios.malnutritionAndShelter;
+### Real-Time Updates
+- WebSocket or polling for live compliance updates
+- Duck state changes immediately when user resolves issues
+- Smooth transitions between states
+
+## Documentation Files
+
+- **DUCK_STATE_WORKFLOW.md** - Complete workflow logic and data structures
+- **MULTI_STATE_DUCK.md** - Multi-state implementation details
+- **TEST_DUCK_STATES.md** - Testing different states
+- **frontend/src/config/policyStateMappings.ts** - Policy configurationionAndShelter;
 ```
 
 ## Future Enhancements
