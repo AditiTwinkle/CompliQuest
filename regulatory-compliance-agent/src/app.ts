@@ -12,6 +12,7 @@ import scrapingRoutes from './routes/scraping';
 import organizationalChecklistRoutes from './routes/organizationalChecklist';
 import gapAnalysisRoutes from './routes/gapAnalysis';
 import questionGenerationRoutes from './routes/questionGeneration';
+import analysisRoutes from './routes/analysis';
 
 export const createApp = (): express.Application => {
   const app = express();
