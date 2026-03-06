@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import SimpleDuckAvatar from '../components/SimpleDuckAvatar';
 import { AvatarState } from '../components/LSEGlingAvatar';
 import { RootState } from '../store';
+import { useNotifications } from '../contexts/NotificationContext';
+import { determineAvatarStates } from '../utils/avatarStateMapper';
 
 interface Duck {
   id: number;
@@ -27,9 +29,20 @@ interface Division {
 
 function Community() {
   const user = useSelector((state: RootState) => state.auth.user);
+  const { alerts } = useNotifications();
   const [selectedState, setSelectedState] = useState<AvatarState | 'all'>('all');
   const [selectedDivision, setSelectedDivision] = useState<string | 'all'>('all');
-  
+
+  // Determine user's duck state based on their actual alerts
+  const userDuckStates = determineAvatarStates(alerts);
+  const userDuckState = userDuckStates[0] || 'happy';
+
+  console.log('Community page - User duck state:', {
+    alertsCount: alerts.length,
+    userDuckStates,
+    primaryState: userDuckState
+  });
+
   // Define divisions with duck distribution
   const divisions: Division[] = useMemo(() => [
     { name: 'Capital Markets', shortName: 'Trading & Execution', color: 'blue', duckCount: 15, x: 5, y: 5, width: 0, height: 0 },
@@ -43,7 +56,7 @@ function Community() {
   const divisionsWithSize = useMemo(() => {
     const totalDucks = divisions.reduce((sum, d) => sum + d.duckCount, 0);
     const baseSize = 30; // Base percentage size
-    
+
     return divisions.map(div => {
       const proportion = div.duckCount / totalDucks;
       const size = baseSize + (proportion * 40); // Scale between 30-70%
@@ -54,7 +67,7 @@ function Community() {
       };
     });
   }, [divisions]);
-  
+
   // Generate 55 ducks with specified distribution
   const ducks = useMemo(() => {
     const duckList: Duck[] = [];
@@ -79,11 +92,11 @@ function Community() {
       'LSEG Hub': { happy: 5, tired: 1, thirsty: 1, wet: 0, hungry: 1 }, // 8 total
     };
 
-    // Add user duck first in Capital Markets (counts as 1 happy)
+    // Add user duck first in Capital Markets with their actual state
     const userDivision = divisionsWithSize[0];
-    duckList.push({ 
-      id: id++, 
-      state: 'happy', 
+    duckList.push({
+      id: id++,
+      state: userDuckState,
       ...randomPositionInDivision(userDivision),
       isUser: true,
       name: user?.name || 'You',
@@ -93,29 +106,35 @@ function Community() {
     // Add ducks for each division with mixed states
     divisionsWithSize.forEach((division) => {
       const distribution = stateDistribution[division.name as keyof typeof stateDistribution];
-      
+
       // Create array of states for this division
       const divisionStates: AvatarState[] = [];
-      
-      // For Capital Markets, subtract 1 from happy count since user is already added
+
+      // For Capital Markets, adjust the count based on user's state
       if (division.name === 'Capital Markets') {
-        divisionStates.push(...Array(distribution.happy - 1).fill('happy'));
+        // Subtract 1 from the count of the user's state
+        const userStateKey = userDuckState as keyof typeof distribution;
+
+        Object.entries(distribution).forEach(([state, count]) => {
+          const actualCount = state === userDuckState ? Math.max(0, count - 1) : count;
+          divisionStates.push(...Array(actualCount).fill(state));
+        });
       } else {
         divisionStates.push(...Array(distribution.happy).fill('happy'));
       }
-      
+
       divisionStates.push(...Array(distribution.tired).fill('tired'));
       divisionStates.push(...Array(distribution.thirsty).fill('thirsty'));
       divisionStates.push(...Array(distribution.wet).fill('wet'));
       divisionStates.push(...Array(distribution.hungry).fill('hungry'));
-      
+
       // Shuffle states for random distribution within division
       const shuffledStates = divisionStates.sort(() => Math.random() - 0.5);
-      
+
       // Add ducks for this division
       shuffledStates.forEach((state) => {
-        duckList.push({ 
-          id: id++, 
+        duckList.push({
+          id: id++,
           state,
           ...randomPositionInDivision(division),
           division: division.name
@@ -124,7 +143,7 @@ function Community() {
     });
 
     return duckList;
-  }, [user?.name, divisionsWithSize]);
+  }, [user?.name, divisionsWithSize, userDuckState]);
 
   const stats = {
     happy: ducks.filter(d => d.state === 'happy').length,
@@ -139,15 +158,15 @@ function Community() {
   // Filter ducks based on selected state and division
   const filteredDucks = useMemo(() => {
     let filtered = ducks;
-    
+
     if (selectedState !== 'all') {
       filtered = filtered.filter(duck => duck.state === selectedState);
     }
-    
+
     if (selectedDivision !== 'all') {
       filtered = filtered.filter(duck => duck.division === selectedDivision);
     }
-    
+
     return filtered;
   }, [ducks, selectedState, selectedDivision]);
 
@@ -161,7 +180,7 @@ function Community() {
 
   const getStateMessage = (state: AvatarState, isUser: boolean, name?: string) => {
     const prefix = isUser ? `${name}: ` : '';
-    
+
     switch (state) {
       case 'happy':
         return `${prefix}Everything is great! 😊`;
@@ -191,7 +210,7 @@ function Community() {
             Office floor with team member status - Total: {totalDucks} team members
             {(selectedState !== 'all' || selectedDivision !== 'all') && (
               <span className="ml-2 text-[var(--duo-primary)] font-bold">
-                (Showing {filteredDucks.length} 
+                (Showing {filteredDucks.length}
                 {selectedState !== 'all' && ` ${selectedState}`}
                 {selectedDivision !== 'all' && ` in ${selectedDivision}`}
                 {' '}- Click filters again to show all)
@@ -212,16 +231,15 @@ function Community() {
                 orange: 'border-orange-500 bg-orange-50 text-orange-700 hover:bg-orange-100',
                 indigo: 'border-indigo-500 bg-indigo-50 text-indigo-700 hover:bg-indigo-100',
               };
-              
+
               return (
                 <button
                   key={division.name}
                   onClick={() => handleDivisionClick(division.name)}
-                  className={`px-4 py-2 rounded-full border-2 font-semibold text-sm transition-all duration-200 ${
-                    selectedDivision === division.name 
-                      ? `ring-2 ring-offset-2 ${colorClasses[division.color as keyof typeof colorClasses]}` 
-                      : `${colorClasses[division.color as keyof typeof colorClasses]}`
-                  }`}
+                  className={`px-4 py-2 rounded-full border-2 font-semibold text-sm transition-all duration-200 ${selectedDivision === division.name
+                    ? `ring-2 ring-offset-2 ${colorClasses[division.color as keyof typeof colorClasses]}`
+                    : `${colorClasses[division.color as keyof typeof colorClasses]}`
+                    }`}
                 >
                   {division.name} ({division.duckCount})
                 </button>
@@ -234,59 +252,54 @@ function Community() {
         <div className="mb-6">
           <h3 className="text-sm font-semibold text-gray-700 mb-2">Filter by State:</h3>
           <div className="grid grid-cols-5 gap-4">
-          <button
-            onClick={() => handleStateClick('happy')}
-            className={`bg-white rounded-lg shadow p-4 border-l-4 border-green-500 transition-all duration-200 hover:shadow-lg hover:scale-105 ${
-              selectedState === 'happy' ? 'ring-2 ring-green-500 bg-green-50' : ''
-            }`}
-          >
-            <div className="text-2xl font-bold text-gray-900">{stats.happy}</div>
-            <div className="text-sm text-gray-600">😊 Happy</div>
-          </button>
-          <button
-            onClick={() => handleStateClick('tired')}
-            className={`bg-white rounded-lg shadow p-4 border-l-4 border-purple-500 transition-all duration-200 hover:shadow-lg hover:scale-105 ${
-              selectedState === 'tired' ? 'ring-2 ring-purple-500 bg-purple-50' : ''
-            }`}
-          >
-            <div className="text-2xl font-bold text-gray-900">{stats.tired}</div>
-            <div className="text-sm text-gray-600">😴 Tired</div>
-          </button>
-          <button
-            onClick={() => handleStateClick('thirsty')}
-            className={`bg-white rounded-lg shadow p-4 border-l-4 border-blue-500 transition-all duration-200 hover:shadow-lg hover:scale-105 ${
-              selectedState === 'thirsty' ? 'ring-2 ring-blue-500 bg-blue-50' : ''
-            }`}
-          >
-            <div className="text-2xl font-bold text-gray-900">{stats.thirsty}</div>
-            <div className="text-sm text-gray-600">💧 Thirsty</div>
-          </button>
-          <button
-            onClick={() => handleStateClick('wet')}
-            className={`bg-white rounded-lg shadow p-4 border-l-4 border-gray-500 transition-all duration-200 hover:shadow-lg hover:scale-105 ${
-              selectedState === 'wet' ? 'ring-2 ring-gray-500 bg-gray-50' : ''
-            }`}
-          >
-            <div className="text-2xl font-bold text-gray-900">{stats.wet}</div>
-            <div className="text-sm text-gray-600">🌧️ Wet</div>
-          </button>
-          <button
-            onClick={() => handleStateClick('hungry')}
-            className={`bg-white rounded-lg shadow p-4 border-l-4 border-orange-500 transition-all duration-200 hover:shadow-lg hover:scale-105 ${
-              selectedState === 'hungry' ? 'ring-2 ring-orange-500 bg-orange-50' : ''
-            }`}
-          >
-            <div className="text-2xl font-bold text-gray-900">{stats.hungry}</div>
-            <div className="text-sm text-gray-600">🍞 Hungry</div>
-          </button>
+            <button
+              onClick={() => handleStateClick('happy')}
+              className={`bg-white rounded-lg shadow p-4 border-l-4 border-green-500 transition-all duration-200 hover:shadow-lg hover:scale-105 ${selectedState === 'happy' ? 'ring-2 ring-green-500 bg-green-50' : ''
+                }`}
+            >
+              <div className="text-2xl font-bold text-gray-900">{stats.happy}</div>
+              <div className="text-sm text-gray-600">😊 Happy</div>
+            </button>
+            <button
+              onClick={() => handleStateClick('tired')}
+              className={`bg-white rounded-lg shadow p-4 border-l-4 border-purple-500 transition-all duration-200 hover:shadow-lg hover:scale-105 ${selectedState === 'tired' ? 'ring-2 ring-purple-500 bg-purple-50' : ''
+                }`}
+            >
+              <div className="text-2xl font-bold text-gray-900">{stats.tired}</div>
+              <div className="text-sm text-gray-600">😴 Tired</div>
+            </button>
+            <button
+              onClick={() => handleStateClick('thirsty')}
+              className={`bg-white rounded-lg shadow p-4 border-l-4 border-blue-500 transition-all duration-200 hover:shadow-lg hover:scale-105 ${selectedState === 'thirsty' ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+                }`}
+            >
+              <div className="text-2xl font-bold text-gray-900">{stats.thirsty}</div>
+              <div className="text-sm text-gray-600">💧 Thirsty</div>
+            </button>
+            <button
+              onClick={() => handleStateClick('wet')}
+              className={`bg-white rounded-lg shadow p-4 border-l-4 border-gray-500 transition-all duration-200 hover:shadow-lg hover:scale-105 ${selectedState === 'wet' ? 'ring-2 ring-gray-500 bg-gray-50' : ''
+                }`}
+            >
+              <div className="text-2xl font-bold text-gray-900">{stats.wet}</div>
+              <div className="text-sm text-gray-600">🌧️ Wet</div>
+            </button>
+            <button
+              onClick={() => handleStateClick('hungry')}
+              className={`bg-white rounded-lg shadow p-4 border-l-4 border-orange-500 transition-all duration-200 hover:shadow-lg hover:scale-105 ${selectedState === 'hungry' ? 'ring-2 ring-orange-500 bg-orange-50' : ''
+                }`}
+            >
+              <div className="text-2xl font-bold text-gray-900">{stats.hungry}</div>
+              <div className="text-sm text-gray-600">🍞 Hungry</div>
+            </button>
           </div>
         </div>
 
         {/* Floor Map with LSEG Divisions */}
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <div 
+          <div
             className="relative w-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg overflow-hidden"
-            style={{ 
+            style={{
               height: '800px',
               backgroundImage: `
                 repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.03) 50px, rgba(0,0,0,0.03) 51px),
@@ -303,7 +316,7 @@ function Community() {
                 orange: 'from-orange-100 to-orange-200 border-orange-400 text-orange-800',
                 indigo: 'from-indigo-100 to-indigo-200 border-indigo-400 text-indigo-800',
               };
-              
+
               // Create organic pond shape using border-radius
               const pondStyle = {
                 left: `${division.x}%`,
@@ -312,13 +325,12 @@ function Community() {
                 height: `${division.height}%`,
                 borderRadius: `${40 + Math.random() * 20}% ${60 + Math.random() * 20}% ${50 + Math.random() * 20}% ${70 + Math.random() * 20}% / ${60 + Math.random() * 20}% ${40 + Math.random() * 20}% ${60 + Math.random() * 20}% ${40 + Math.random() * 20}%`,
               };
-              
+
               return (
                 <div
                   key={index}
-                  className={`absolute bg-gradient-to-br ${colorClasses[division.color as keyof typeof colorClasses]} border-3 shadow-lg p-4 transition-all duration-300 ${
-                    selectedDivision === division.name ? 'ring-4 ring-offset-2 ring-yellow-400 scale-105' : ''
-                  }`}
+                  className={`absolute bg-gradient-to-br ${colorClasses[division.color as keyof typeof colorClasses]} border-3 shadow-lg p-4 transition-all duration-300 ${selectedDivision === division.name ? 'ring-4 ring-offset-2 ring-yellow-400 scale-105' : ''
+                    }`}
                   style={pondStyle}
                 >
                   <div className="text-sm font-bold mb-1">{division.name}</div>
@@ -326,13 +338,13 @@ function Community() {
                   <div className="absolute bottom-3 right-3 bg-white bg-opacity-80 rounded-full px-3 py-1.5 text-xs font-bold shadow-md">
                     {division.duckCount} 🦆
                   </div>
-                  
+
                   {/* Pond ripple effect */}
-                  <div className="absolute inset-0 rounded-full opacity-20 pointer-events-none" 
-                       style={{
-                         background: 'radial-gradient(circle at 30% 30%, white 0%, transparent 70%)',
-                         borderRadius: pondStyle.borderRadius
-                       }}>
+                  <div className="absolute inset-0 rounded-full opacity-20 pointer-events-none"
+                    style={{
+                      background: 'radial-gradient(circle at 30% 30%, white 0%, transparent 70%)',
+                      borderRadius: pondStyle.borderRadius
+                    }}>
                   </div>
                 </div>
               );
@@ -342,16 +354,14 @@ function Community() {
             {filteredDucks.map((duck) => (
               <div
                 key={duck.id}
-                className={`absolute transition-all duration-300 cursor-pointer group ${
-                  duck.isUser 
-                    ? 'z-20 scale-[2.5] hover:scale-[2.7] opacity-100' 
-                    : 'hover:scale-125 hover:z-30 opacity-50 hover:opacity-80'
-                } ${
-                  (selectedState !== 'all' && duck.state !== selectedState) || 
-                  (selectedDivision !== 'all' && duck.division !== selectedDivision)
-                    ? 'opacity-20' 
+                className={`absolute transition-all duration-300 cursor-pointer group ${duck.isUser
+                  ? 'z-20 scale-[2.5] hover:scale-[2.7] opacity-100'
+                  : 'hover:scale-125 hover:z-30 opacity-50 hover:opacity-80'
+                  } ${(selectedState !== 'all' && duck.state !== selectedState) ||
+                    (selectedDivision !== 'all' && duck.division !== selectedDivision)
+                    ? 'opacity-20'
                     : ''
-                }`}
+                  }`}
                 style={{
                   left: `${duck.x}%`,
                   top: `${duck.y}%`,
@@ -364,23 +374,23 @@ function Community() {
                     <div className="absolute -inset-6 rounded-full border-4 border-yellow-400 animate-ping bg-yellow-100 bg-opacity-40"></div>
                     <div className="absolute -inset-5 rounded-full border-4 border-blue-500 animate-pulse bg-blue-100 bg-opacity-50 shadow-2xl"></div>
                     <div className="absolute -inset-6 rounded-full border-2 border-purple-400 opacity-60"></div>
-                    
+
                     {/* User label with gradient and crown */}
                     <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-400 via-blue-500 to-purple-500 text-white text-base px-5 py-2.5 rounded-full font-bold whitespace-nowrap shadow-2xl border-3 border-white animate-pulse">
                       👑 {duck.name} (YOU)
                     </div>
-                    
+
                     {/* Enhanced sparkle effects with animation */}
                     <div className="absolute -top-3 -left-3 text-yellow-400 text-2xl animate-bounce">✨</div>
                     <div className="absolute -top-3 -right-3 text-yellow-400 text-2xl animate-bounce" style={{ animationDelay: '0.3s' }}>✨</div>
                     <div className="absolute -bottom-2 -left-3 text-blue-400 text-xl animate-bounce" style={{ animationDelay: '0.6s' }}>⭐</div>
                     <div className="absolute -bottom-2 -right-3 text-purple-400 text-xl animate-bounce" style={{ animationDelay: '0.9s' }}>⭐</div>
-                    
+
                     {/* Spotlight effect */}
                     <div className="absolute -inset-8 rounded-full bg-gradient-radial from-yellow-200 via-transparent to-transparent opacity-30 pointer-events-none"></div>
                   </>
                 )}
-                
+
                 {/* Hover tooltip with state */}
                 <div className={`absolute ${duck.isUser ? '-top-14' : '-top-12'} left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg`}>
                   <div className="text-center">
@@ -391,7 +401,7 @@ function Community() {
                   {/* Tooltip arrow */}
                   <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
                 </div>
-                
+
                 <SimpleDuckAvatar state={duck.state} size={duck.isUser ? 'large' : 'small'} />
               </div>
             ))}
