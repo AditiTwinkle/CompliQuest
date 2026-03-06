@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import apiClient from '../utils/api';
 import { RootState } from '../store';
+import LSEGlingAvatar from '../components/LSEGlingAvatar';
 
 export default function UserProfile() {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -47,9 +48,17 @@ export default function UserProfile() {
     <div className="min-h-screen p-8">
       <div className="max-w-2xl mx-auto animate-fade-in">
         <div className="glass-strong rounded-3xl px-8 py-6 mb-8 hover-lift">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-500 bg-clip-text text-transparent">
-            User Profile
-          </h1>
+          <div className="flex items-center gap-6">
+            <div className="flex-shrink-0">
+              <LSEGlingAvatar state="happy" size="medium" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-500 bg-clip-text text-transparent">
+                User Profile
+              </h1>
+              <p className="text-gray-600 mt-2">This is your duck avatar that appears in the Community floor map</p>
+            </div>
+          </div>
         </div>
 
         {success && (

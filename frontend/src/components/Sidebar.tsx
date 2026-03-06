@@ -44,6 +44,16 @@ export default function Sidebar() {
           <span className="text-xl">🎯</span>
           <span>Projects</span>
         </Link>
+        <Link
+          to="/community"
+          className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-bold ${isActive('/community')
+              ? 'bg-[var(--duo-primary)] text-white shadow-lg'
+              : 'text-[var(--duo-text-secondary)] hover:bg-[var(--duo-surface)]'
+            }`}
+        >
+          <span className="text-xl">🦆</span>
+          <span>Community</span>
+        </Link>
       </nav>
 
       <div className="p-3 space-y-3">
