@@ -176,13 +176,23 @@ export default function Dashboard() {
 
         {/* Achievement Section */}
         <div className="duo-success-box text-center">
-          <div className="text-6xl mb-4">🏆</div>
-          <h3 className="text-xl font-bold text-[var(--duo-text-primary)] mb-2">
-            Keep up the great work!
+          <div className="text-4xl sm:text-6xl mb-4">🏆</div>
+          <h3 className="text-lg sm:text-xl font-bold text-[var(--duo-text-primary)] mb-2">
+            Keep up the good work! Your LSEGling is happy and doing well.
           </h3>
-          <p className="text-[var(--duo-text-secondary)] font-medium">
-            You're on a 12-day streak! Complete today's challenge to keep it going.
+          <p className="text-sm sm:text-base text-[var(--duo-text-secondary)] font-medium mb-3">
+            Complete your challenges to keep your LSEGling happy.
           </p>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-6 text-xs sm:text-sm text-[var(--duo-text-secondary)]">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">📅</span>
+              <span className="font-medium">12 days logged in</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-lg">✅</span>
+              <span className="font-medium">{4 - urgentAlerts.length} issues resolved</span>
+            </div>
+          </div>
         </div>
       </div>
 

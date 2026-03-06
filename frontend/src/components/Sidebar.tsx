@@ -47,17 +47,6 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-3 space-y-3">
-        <div className="bg-[var(--duo-surface)] rounded-xl p-3 border-2 border-[var(--duo-border)]">
-          <p className="font-bold text-[var(--duo-text-primary)] text-sm">{user?.name}</p>
-          <p className="text-[var(--duo-text-secondary)] text-xs mt-0.5">{user?.email}</p>
-        </div>
-        <Link
-          to="/profile"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[var(--duo-text-secondary)] hover:bg-[var(--duo-surface)] transition-all duration-200 text-sm font-bold"
-        >
-          <span>👤</span>
-          <span>Profile</span>
-        </Link>
         <button
           onClick={handleLogout}
           className="w-full duo-button-outline text-sm flex items-center justify-center gap-2"
