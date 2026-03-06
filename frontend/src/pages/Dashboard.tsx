@@ -8,7 +8,7 @@ import { useNotifications } from '../contexts/NotificationContext';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { alerts, projects, refreshData } = useNotifications();
+  const { alerts, projects } = useNotifications();
   const [loading, setLoading] = useState(false);
   const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
   const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
@@ -27,17 +27,6 @@ export default function Dashboard() {
     // Data is already loaded from context
     setLoading(false);
   }, []);
-
-  const handleDemoReset = () => {
-    // Reset all policy compliance states to non-compliant
-    localStorage.removeItem('hungry-compliant');
-    localStorage.removeItem('wet-compliant');
-    localStorage.removeItem('tired-compliant');
-    localStorage.removeItem('thirsty-compliant');
-
-    // Reload the data
-    refreshData();
-  };
 
   const urgentAlerts = alerts.filter((a) => a.severity === 'critical' || a.severity === 'high');
 
@@ -75,21 +64,9 @@ export default function Dashboard() {
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex-1"></div>
-            <h1 className="text-6xl font-bold flex-1">
-              <GradientText>CompliQuest</GradientText>
-            </h1>
-            <div className="flex-1 flex justify-end">
-              <button
-                onClick={handleDemoReset}
-                className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 border-2 border-gray-300 rounded-lg hover:bg-gray-200 hover:border-gray-400 transition-all"
-                title="Reset all policies to non-compliant for demo purposes"
-              >
-                🔄 Demo Reset
-              </button>
-            </div>
-          </div>
+          <h1 className="text-6xl font-bold mb-4">
+            <GradientText>CompliQuest</GradientText>
+          </h1>
           <p className="text-[var(--duo-text-secondary)] text-lg font-medium">Compliance has never been this cute.</p>
         </div>
 
@@ -101,9 +78,9 @@ export default function Dashboard() {
                 🚨 Your LSEGling needs help! ({urgentAlerts.length} {urgentAlerts.length === 1 ? 'issue' : 'issues'})
               </h2>
               <div className="flex justify-center mb-6">
-                <LSEGlingAvatar 
-                  states={duckStates} 
-                  size="large" 
+                <LSEGlingAvatar
+                  states={duckStates}
+                  size="large"
                   speechBubble={duckStates.length === 1 ? getSpeechBubbleMessage() : undefined}
                 />
               </div>
@@ -143,9 +120,9 @@ export default function Dashboard() {
                 ✨ Everything looks great!
               </h2>
               <div className="flex justify-center mb-4">
-                <LSEGlingAvatar 
-                  state="happy" 
-                  size="large" 
+                <LSEGlingAvatar
+                  state="happy"
+                  size="large"
                   speechBubble="I'm so happy! 😊"
                 />
               </div>
