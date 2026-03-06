@@ -8,7 +8,6 @@ import UserProfile from './pages/UserProfile'
 import Projects from './pages/Projects'
 import Questionnaire from './pages/Questionnaire'
 import Presentation from './pages/Presentation'
-import Policy from './pages/Policy'
 
 const queryClient = new QueryClient()
 
@@ -18,9 +17,6 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <Router>
           <Routes>
-            {/* Policy routes - no layout */}
-            <Route path="/policy/:policyId" element={<Policy />} />
-
             {/* Main app routes - with layout */}
             <Route
               element={

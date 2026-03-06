@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import LSEGlingAvatar from '../components/LSEGlingAvatar';
+import GradientText from '../components/GradientText';
+import PolicyModal from '../components/PolicyModal';
 import { determineAvatarStates } from '../utils/avatarStateMapper';
 
 interface Alert {
@@ -26,6 +28,18 @@ export default function Dashboard() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
+  const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
+
+  const openPolicyModal = (policyId: string) => {
+    setSelectedPolicyId(policyId);
+    setIsPolicyModalOpen(true);
+  };
+
+  const closePolicyModal = () => {
+    setIsPolicyModalOpen(false);
+    setSelectedPolicyId(null);
+  };
 
   useEffect(() => {
     fetchData();
@@ -168,8 +182,8 @@ export default function Dashboard() {
         <div className="text-center">
           <div className="flex justify-between items-center mb-4">
             <div className="flex-1"></div>
-            <h1 className="text-4xl font-bold text-[var(--duo-text-primary)] flex-1">
-              🎮 CompliQuest
+            <h1 className="text-6xl font-bold flex-1">
+              <GradientText>CompliQuest</GradientText>
             </h1>
             <div className="flex-1 flex justify-end">
               <button
@@ -181,7 +195,7 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-          <p className="text-[var(--duo-text-secondary)] text-lg font-medium">Complete challenges to protect your community!</p>
+          <p className="text-[var(--duo-text-secondary)] text-lg font-medium">Compliance has never been this cute.</p>
         </div>
 
         {/* Alert Section */}
@@ -215,13 +229,13 @@ export default function Dashboard() {
                         <p className="text-sm text-[var(--duo-text-secondary)]">{alert.message}</p>
                       </div>
                     </div>
-                    <Link
-                      to={`/policy/${policyNumber}`}
-                      className="duo-button-primary text-sm inline-block no-underline"
-                      style={{ display: 'inline-block', textDecoration: 'none' }}
+                    <button
+                      onClick={() => openPolicyModal(policyNumber)}
+                      className="duo-button-primary text-sm"
+                      style={{ textDecoration: 'none' }}
                     >
                       Fix Now
-                    </Link>
+                    </button>
                   </div>
                 );
               })}
@@ -299,6 +313,13 @@ export default function Dashboard() {
           </p>
         </div>
       </div>
+
+      {/* Policy Modal */}
+      <PolicyModal
+        policyId={selectedPolicyId}
+        isOpen={isPolicyModalOpen}
+        onClose={closePolicyModal}
+      />
     </div>
   );
 }

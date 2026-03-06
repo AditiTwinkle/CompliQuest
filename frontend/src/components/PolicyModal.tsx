@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import Breadcrumb from '../components/Breadcrumb';
+import { useNavigate } from 'react-router-dom';
 
 interface PolicyConfig {
     id: string;
@@ -76,10 +75,13 @@ const POLICIES: Record<string, PolicyConfig> = {
     },
 };
 
-export const Policy: React.FC = () => {
-    const { policyId } = useParams<{ policyId: string }>();
-    const navigate = useNavigate();
+interface PolicyModalProps {
+    policyId: string | null;
+    isOpen: boolean;
+    onClose: () => void;
+}
 
+export const PolicyModal: React.FC<PolicyModalProps> = ({ policyId, isOpen, onClose }) => {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -91,57 +93,90 @@ export const Policy: React.FC = () => {
 
         setIsSubmitting(true);
 
-        // Check if answer is correct (compliant)
         const isCompliant = option === policy.correctAnswer;
-
-        // Set compliance property in localStorage
         localStorage.setItem(policy.complianceProperty, isCompliant.toString());
 
         if (isCompliant) {
-            // Show success and redirect to dashboard
             setShowSuccess(true);
             setTimeout(() => {
-                navigate('/');
+                onClose();
+                window.location.reload();
             }, 2000);
         } else {
-            // Show error and redirect back to dashboard (policy will still show)
             setShowError(true);
             setTimeout(() => {
-                navigate('/');
+                onClose();
+                window.location.reload();
             }, 2000);
         }
     };
 
-    if (!policy) {
-        return (
-            <div style={{
-                minHeight: '100vh',
-                backgroundColor: 'white',
-                padding: '3rem 2rem'
-            }}>
-                <div style={{ maxWidth: '48rem', margin: '0 auto' }}>
-                    <Breadcrumb items={[{ label: 'Dashboard', path: '/' }]} />
-                    <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-                        <p style={{ fontSize: '1.5rem', color: '#dc2626', fontWeight: 'bold' }}>
-                            Policy not found
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    const handleClose = () => {
+        if (!isSubmitting) {
+            setShowSuccess(false);
+            setShowError(false);
+            onClose();
+        }
+    };
+
+    if (!isOpen || !policy) return null;
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            backgroundColor: 'white',
-            padding: '3rem 2rem'
-        }}>
-            <div style={{ maxWidth: '48rem', margin: '0 auto' }}>
-                <Breadcrumb items={[
-                    { label: 'Dashboard', path: '/' },
-                    { label: `Policy ${policy.id}: ${policy.title}`, path: `/policy/${policy.id}` }
-                ]} />
+        <div
+            style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 1000,
+                padding: '2rem'
+            }}
+            onClick={handleClose}
+        >
+            <div
+                style={{
+                    backgroundColor: 'white',
+                    borderRadius: '1rem',
+                    maxWidth: '48rem',
+                    width: '100%',
+                    maxHeight: '90vh',
+                    overflow: 'auto',
+                    padding: '3rem',
+                    position: 'relative'
+                }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Close Button */}
+                {!isSubmitting && (
+                    <button
+                        onClick={handleClose}
+                        style={{
+                            position: 'absolute',
+                            top: '1rem',
+                            right: '1rem',
+                            background: 'none',
+                            border: 'none',
+                            fontSize: '1.5rem',
+                            cursor: 'pointer',
+                            color: '#6b7280',
+                            padding: '0.5rem',
+                            lineHeight: 1
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.color = '#111827';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.color = '#6b7280';
+                        }}
+                    >
+                        ✕
+                    </button>
+                )}
 
                 {/* Success Animation */}
                 {showSuccess && (
@@ -154,7 +189,7 @@ export const Policy: React.FC = () => {
                             {policy.successMessage} {policy.icon}
                         </p>
                         <p style={{ fontSize: '1rem', color: '#16a34a', marginTop: '1rem' }}>
-                            Policy is now compliant. Redirecting...
+                            Policy is now compliant. Closing...
                         </p>
                     </div>
                 )}
@@ -170,7 +205,7 @@ export const Policy: React.FC = () => {
                             That answer does not meet compliance requirements.
                         </p>
                         <p style={{ fontSize: '1rem', color: '#dc2626', marginTop: '1rem' }}>
-                            Policy remains non-compliant. Redirecting...
+                            Policy remains non-compliant. Closing...
                         </p>
                     </div>
                 )}
@@ -234,4 +269,4 @@ export const Policy: React.FC = () => {
     );
 };
 
-export default Policy;
+export default PolicyModal;
