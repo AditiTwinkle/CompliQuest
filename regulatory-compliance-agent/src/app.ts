@@ -11,6 +11,7 @@ import healthRoutes from './routes/health';
 import scrapingRoutes from './routes/scraping';
 import organizationalChecklistRoutes from './routes/organizationalChecklist';
 import gapAnalysisRoutes from './routes/gapAnalysis';
+import questionGenerationRoutes from './routes/questionGeneration';
 
 export const createApp = (): express.Application => {
   const app = express();
@@ -45,6 +46,7 @@ export const createApp = (): express.Application => {
   app.use('/api/scraping', scrapingRoutes);
   app.use('/api/organizational-checklist', organizationalChecklistRoutes);
   app.use('/api/gap-analysis', gapAnalysisRoutes);
+  app.use('/api/questions', questionGenerationRoutes);
 
   // Catch 404 and forward to error handler
   app.use(notFoundHandler);

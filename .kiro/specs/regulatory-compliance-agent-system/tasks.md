@@ -42,7 +42,7 @@ This implementation plan prioritizes a working MVP for hackathon demonstration o
     - Create mock organizational data for demo purposes
     - _Requirements: 2.1, 2.2_
 
-  - [-] 3.2 Implement basic gap comparison logic
+  - [x] 3.2 Implement basic gap comparison logic
     - Simple string matching between requirements and controls
     - Basic severity assignment (High/Medium/Low) using keyword matching
     - Calculate basic compliance percentage
@@ -77,7 +77,7 @@ This implementation plan prioritizes a working MVP for hackathon demonstration o
     - _Requirements: 4.3, 2.3_
 
 - [ ] 6. Implement question generation
-  - [~] 6.1 Create basic question generation logic
+  - [-] 6.1 Create basic question generation logic
     - Template-based question generation from gaps
     - Generate exactly 4 questions prioritizing high severity gaps
     - _Requirements: 3.1, 3.3_
