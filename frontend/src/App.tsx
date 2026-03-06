@@ -8,6 +8,7 @@ import UserProfile from './pages/UserProfile'
 import Projects from './pages/Projects'
 import Questionnaire from './pages/Questionnaire'
 import Presentation from './pages/Presentation'
+import { NotificationProvider } from './contexts/NotificationContext'
 
 const queryClient = new QueryClient()
 
@@ -15,23 +16,25 @@ function App() {
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <Router>
-          <Routes>
-            {/* Main app routes - with layout */}
-            <Route
-              element={
-                <Layout />
-              }
-            >
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/:projectId/questionnaire" element={<Questionnaire />} />
-              <Route path="/presentation" element={<Presentation />} />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Router>
+        <NotificationProvider>
+          <Router>
+            <Routes>
+              {/* Main app routes - with layout */}
+              <Route
+                element={
+                  <Layout />
+                }
+              >
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/profile" element={<UserProfile />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/projects/:projectId/questionnaire" element={<Questionnaire />} />
+                <Route path="/presentation" element={<Presentation />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Router>
+        </NotificationProvider>
       </QueryClientProvider>
     </Provider>
   )

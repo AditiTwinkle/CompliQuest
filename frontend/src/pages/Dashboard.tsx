@@ -4,30 +4,12 @@ import LSEGlingAvatar from '../components/LSEGlingAvatar';
 import GradientText from '../components/GradientText';
 import PolicyModal from '../components/PolicyModal';
 import { determineAvatarStates } from '../utils/avatarStateMapper';
-
-interface Alert {
-  id: string;
-  title: string;
-  message: string;
-  severity: 'critical' | 'high' | 'medium' | 'low';
-  status: string;
-}
-
-interface Project {
-  id: string;
-  name: string;
-  framework: string;
-  complianceScore: number;
-  totalControls: number;
-  compliantControls: number;
-  nonCompliantControls: number;
-}
+import { useNotifications } from '../contexts/NotificationContext';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { alerts, projects, refreshData } = useNotifications();
+  const [loading, setLoading] = useState(false);
   const [selectedPolicyId, setSelectedPolicyId] = useState<string | null>(null);
   const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
 
@@ -42,7 +24,8 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    fetchData();
+    // Data is already loaded from context
+    setLoading(false);
   }, []);
 
   const handleDemoReset = () => {
@@ -52,96 +35,8 @@ export default function Dashboard() {
     localStorage.removeItem('tired-compliant');
     localStorage.removeItem('thirsty-compliant');
 
-    // Reload the data to show all policies again
-    fetchData();
-  };
-
-  const fetchData = async () => {
-    // Check compliance status from localStorage
-    const hungryCompliant = localStorage.getItem('hungry-compliant') === 'true';
-    const wetCompliant = localStorage.getItem('wet-compliant') === 'true';
-    const tiredCompliant = localStorage.getItem('tired-compliant') === 'true';
-    const thirstyCompliant = localStorage.getItem('thirsty-compliant') === 'true';
-
-    // Mock alerts representing policy compliance issues - only show non-compliant
-    const mockAlerts: Alert[] = [];
-
-    if (!hungryCompliant) {
-      const wasAttempted = localStorage.getItem('hungry-compliant') === 'false';
-      mockAlerts.push({
-        id: 'policy-1',
-        title: 'Malnutrition',
-        message: wasAttempted
-          ? '❌ Previous answer was incorrect. Please try again.'
-          : 'Food policy not compliant',
-        severity: 'high',
-        status: 'active',
-      });
-    }
-
-    if (!wetCompliant) {
-      const wasAttempted = localStorage.getItem('wet-compliant') === 'false';
-      mockAlerts.push({
-        id: 'policy-2',
-        title: 'Need shelter',
-        message: wasAttempted
-          ? '❌ Previous answer was incorrect. Please try again.'
-          : 'Shelter policy not compliant',
-        severity: 'high',
-        status: 'active',
-      });
-    }
-
-    if (!tiredCompliant) {
-      const wasAttempted = localStorage.getItem('tired-compliant') === 'false';
-      mockAlerts.push({
-        id: 'policy-3',
-        title: 'Need sleep',
-        message: wasAttempted
-          ? '❌ Previous answer was incorrect. Please try again.'
-          : 'Sleep policy not compliant',
-        severity: 'high',
-        status: 'active',
-      });
-    }
-
-    if (!thirstyCompliant) {
-      const wasAttempted = localStorage.getItem('thirsty-compliant') === 'false';
-      mockAlerts.push({
-        id: 'policy-4',
-        title: 'Need water',
-        message: wasAttempted
-          ? '❌ Previous answer was incorrect. Please try again.'
-          : 'Water policy not compliant',
-        severity: 'high',
-        status: 'active',
-      });
-    }
-
-    const mockProjects: Project[] = [
-      {
-        id: 'proj-1',
-        name: 'GDPR Compliance Challenge',
-        framework: 'GDPR',
-        complianceScore: 45,
-        totalControls: 10,
-        compliantControls: 4,
-        nonCompliantControls: 6,
-      },
-      {
-        id: 'proj-2',
-        name: 'HIPAA Security Challenge',
-        framework: 'HIPAA',
-        complianceScore: 60,
-        totalControls: 10,
-        compliantControls: 6,
-        nonCompliantControls: 4,
-      },
-    ];
-
-    setAlerts(mockAlerts);
-    setProjects(mockProjects);
-    setLoading(false);
+    // Reload the data
+    refreshData();
   };
 
   const urgentAlerts = alerts.filter((a) => a.severity === 'critical' || a.severity === 'high');

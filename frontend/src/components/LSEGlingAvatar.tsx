@@ -92,7 +92,7 @@ function LSEGlingAvatar({
 
   // Build CSS class string for multiple states
   const getContainerClasses = () => {
-    const classes = ['avatar-container'];
+    const classes = ['avatar-container', `avatar-size-${size}`];
     currentStates.forEach(s => classes.push(`avatar-container-${s}`));
     return classes.join(' ');
   };
@@ -108,6 +108,37 @@ function LSEGlingAvatar({
           border-radius: 24px;
           background: ${getBackgroundGradient()};
           transition: background 0.8s ease;
+        }
+
+        /* Responsive sizing */
+        @media (max-width: 640px) {
+          .avatar-container.avatar-size-large {
+            width: 280px !important;
+            height: 280px !important;
+          }
+          .avatar-container.avatar-size-medium {
+            width: 240px !important;
+            height: 240px !important;
+          }
+          .avatar-container.avatar-size-small {
+            width: 160px !important;
+            height: 160px !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .avatar-container.avatar-size-large {
+            width: 240px !important;
+            height: 240px !important;
+          }
+          .avatar-container.avatar-size-medium {
+            width: 200px !important;
+            height: 200px !important;
+          }
+          .avatar-container.avatar-size-small {
+            width: 140px !important;
+            height: 140px !important;
+          }
         }
 
         /* Chick body parts */
@@ -714,7 +745,7 @@ function LSEGlingAvatar({
           border-color: #10b981;
         }
 
-        /* Clearer arrow tails */
+        /* Arrow tails pointing toward duck center (around 50% horizontal, 55% vertical) */
         .speech-bubble::after {
           content: '';
           position: absolute;
@@ -725,7 +756,7 @@ function LSEGlingAvatar({
           border-top: 12px solid var(--duo-primary, #6366f1);
         }
 
-        /* Tail for single/first bubble - pointing down */
+        /* Tail for single/first bubble - pointing down toward duck head */
         .speech-bubble-single::after,
         .speech-bubble-multi-0::after {
           bottom: -10px;
@@ -733,19 +764,24 @@ function LSEGlingAvatar({
           transform: translateX(-50%);
         }
 
-        /* Tail for left bubbles - pointing toward center */
-        .speech-bubble-multi-1::after,
-        .speech-bubble-multi-3::after {
-          top: 50%;
+        /* Tail for left bubbles - pointing right and slightly down toward duck center */
+        .speech-bubble-multi-1::after {
+          top: 60%;
           right: -8px;
-          transform: translateY(-50%) rotate(90deg);
+          transform: translateY(-50%) rotate(75deg);
         }
 
-        /* Tail for right bubbles - pointing toward center */
+        .speech-bubble-multi-3::after {
+          top: 40%;
+          right: -8px;
+          transform: translateY(-50%) rotate(85deg);
+        }
+
+        /* Tail for right bubbles - pointing left and slightly down toward duck center */
         .speech-bubble-multi-2::after {
-          top: 50%;
+          top: 60%;
           left: -8px;
-          transform: translateY(-50%) rotate(-90deg);
+          transform: translateY(-50%) rotate(-75deg);
         }
 
         .speech-bubble-happy::after {
@@ -773,18 +809,23 @@ function LSEGlingAvatar({
         }
 
         /* Inner tail for left bubbles */
-        .speech-bubble-multi-1::before,
-        .speech-bubble-multi-3::before {
-          top: 50%;
+        .speech-bubble-multi-1::before {
+          top: 60%;
           right: -6px;
-          transform: translateY(-50%) rotate(90deg);
+          transform: translateY(-50%) rotate(75deg);
+        }
+
+        .speech-bubble-multi-3::before {
+          top: 40%;
+          right: -6px;
+          transform: translateY(-50%) rotate(85deg);
         }
 
         /* Inner tail for right bubbles */
         .speech-bubble-multi-2::before {
-          top: 50%;
+          top: 60%;
           left: -6px;
-          transform: translateY(-50%) rotate(-90deg);
+          transform: translateY(-50%) rotate(-75deg);
         }
 
         @keyframes bubbleBounce {
