@@ -39,7 +39,7 @@ router.get('/health', asyncHandler(async (req: Request, res: Response<ApiRespons
   });
 }));
 
-router.get('/ready', asyncHandler(async (req: Request, res: Response<ApiResponse<{ ready: boolean }>) => {
+router.get('/ready', asyncHandler(async (req: Request, res: Response<ApiResponse<{ ready: boolean }>>) => {
   // Readiness check - ensure all required services are available
   let ready = true;
   const checks: string[] = [];

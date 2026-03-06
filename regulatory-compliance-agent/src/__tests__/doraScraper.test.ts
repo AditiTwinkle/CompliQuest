@@ -110,11 +110,11 @@ describe('DORA Content Validation', () => {
     const content = await doraScraper.scrapeDORARequirements();
 
     content.requirements.forEach((req, index) => {
-      expect(req.id, `Requirement ${index} should have ID`).toBeTruthy();
-      expect(req.title, `Requirement ${index} should have title`).toBeTruthy();
-      expect(req.description, `Requirement ${index} should have description`).toBeTruthy();
-      expect(req.description.length, `Requirement ${index} description should be meaningful`).toBeGreaterThan(10);
-      expect(req.sectionNumber, `Requirement ${index} should have section number`).toBeTruthy();
+      expect(req.id).toBeTruthy();
+      expect(req.title).toBeTruthy();
+      expect(req.description).toBeTruthy();
+      expect(req.description.length).toBeGreaterThan(10);
+      expect(req.sectionNumber).toBeTruthy();
     });
   });
 });

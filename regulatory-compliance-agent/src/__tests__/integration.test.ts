@@ -5,7 +5,7 @@ import { BedrockConfig } from '../config/bedrock';
 describe('Integration Tests', () => {
   describe('Configuration', () => {
     it('should load environment configuration correctly', () => {
-      expect(config.port).toBe(3001);
+      expect(config.port).toBe(3002);
       expect(config.nodeEnv).toBe('test'); // Set in test setup
       expect(config.aws.region).toBe('us-east-1');
       expect(config.bedrock.modelId).toContain('claude');
